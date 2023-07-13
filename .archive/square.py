@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 
 # Personal classes.
 from KMAN.Regressors import *
-from KMAN.FourierMethods import *
 
 # Hyper parameter(s).
 Nmax = 500;
