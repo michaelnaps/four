@@ -12,8 +12,6 @@ class Fourier:
         self.Y = Y;
         self.h = h;
         self.N = N;
-        self.A = None;
-        self.B = None;
 
     def setDataSets(self, X, Y):
         self.X = X;
@@ -21,7 +19,7 @@ class Fourier:
         # Return instance of self.
         return self;
 
-    def setCoefficientNumber( self, N ):
+    def setCoefficientNumber(self, N):
         self.N = N;
         # Return instance of self.
         return self;
@@ -29,6 +27,8 @@ class Fourier:
 
 class RealFourier( Fourier ):
     def __init__(self, X=None, Y=None, N=-1, h=1e-3):
+        self.A = None;
+        self.B = None;
         Fourier.__init__( self, X=X, Y=Y, N=N, h=h );
 
     def generateSeries(self, X):
@@ -74,3 +74,9 @@ class RealFourier( Fourier ):
 
         # Return instance of self.
         return self;
+
+
+class ComplexFourier( Fourier ):
+    def __init__(self, X=None, Y=None, N=-1, h=1e-3):
+        self.C = None;
+        Fourier.__init__( self, X=X, Y=Y, N=N, h=h );
