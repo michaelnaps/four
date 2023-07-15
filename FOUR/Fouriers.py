@@ -34,11 +34,12 @@ class RealFourier( Fourier ):
     def generateSeries(self, X):
         assert self.N != -1, "ERROR: Coefficient number, N, is not set."
         M = X.shape[1];
-        xSinList = np.ones( (M, 2*self.N) );
-        xCosList = np.empty( (M, 2*self.N) );
-        for k in range( 2*self.N ):
+        xSinList = np.ones( (M, self.N) );
+        xCosList = np.empty( (M, self.N) );
+        for k in range( self.N ):
             xSinList[:,k] = np.sin( 2*np.pi*k*X/self.h );
             xCosList[:,k] = np.cos( 2*np.pi*k*X/self.h );
+        # Return sin(X) and cox(X) lists separately.
         return xSinList, xCosList;
 
     def propagate(self, X):
@@ -46,7 +47,8 @@ class RealFourier( Fourier ):
         assert self.B is not None, "ERROR: B coefficient vector is empty."
         xSinList, xCosList = self.generateSeries( X );
         print( xSinList.shape, xCosList.shape )
-        Y = self.A@xSinList + selfB@xCostList;
+        # Return approximate solution using coefficient matrices.
+        return self.A@xSinList.T + self.B@xCosList.T;
 
     def dft(self, X=None, Y=None, h=None):
         if X is not None:
@@ -54,23 +56,26 @@ class RealFourier( Fourier ):
         if h is not None:
             self.h = h;
 
+        assert self.X is not None, "ERROR: X data set is empty."
+        assert self.Y is not None, "ERROR: Y data set is empty."
+
         # Set expansion number (strict in DFT).
         self.N = int( self.X.shape[1]/2 );
 
-        self.A = np.empty( (1, self.N) );
-        self.B = np.empty( (1, self.N) );
+        self.A = np.zeros( (1, self.N) );
+        self.B = np.zeros( (1, self.N) );
 
         self.A[0][0] = 0;
         self.B[0][0] = 1/(2*self.N)*np.sum( self.Y );
 
         xSinList, xCosList = self.generateSeries( X );
         for k in range( 1, self.N ):
-            for y, xSin, xCos in zip( self.Y[0], xSinList[0], xCosList[0] ):
-                self.A[0][k] += y*xSin;
-                self.B[0][k] += y*xCos;
+            for y, xSin, xCos in zip( self.Y[0], xSinList[:,k], xCosList[:,k] ):
+                self.A[0][k] += 1/self.N*y*xSin;
+                self.B[0][k] += 1/self.N*y*xCos;
 
         self.A[0][-1] = 0;
-        self.B[0][-1] = 0; # 1/(2*self.N)*np.sum( [ self.Y[0][j]*np.cos( 2*np.pi*self.N*self.X[0][j]/self.h ) for j in range( self.N ) ] );
+        self.B[0][-1] = 1/(2*self.N)*np.sum( Y[:,-1]*xCosList[:,-1] );
 
         # Return instance of self.
         return self;
