@@ -31,17 +31,22 @@ class RealFourier( Fourier ):
     def __init__(self, X=None, Y=None, N=-1, h=1e-3):
         Fourier.__init__( self, X=X, Y=Y, N=N, h=h );
 
-    def liftData(self, X, h=None):
-        if self.N == -1:
-            print( "ERROR: 'N' is not set." );
-            return None;
+    def generateSeries(self, X):
+        assert self.N != -1, "ERROR: Coefficient number, N, is not set."
         M = X.shape[1];
-        xSinList = np.empty( (M, 2*self.N) );
+        xSinList = np.ones( (M, 2*self.N) );
         xCosList = np.empty( (M, 2*self.N) );
-        for k in range( self.N ):
+        for k in range( 2*self.N ):
             xSinList[:,k] = np.sin( 2*np.pi*k*X/self.h );
             xCosList[:,k] = np.cos( 2*np.pi*k*X/self.h );
         return xSinList, xCosList;
+
+    def propagate(self, X):
+        assert self.A is not None, "ERROR: A coefficient vector is empty."
+        assert self.B is not None, "ERROR: B coefficient vector is empty."
+        xSinList, xCosList = self.generateSeries( X );
+        print( xSinList.shape, xCosList.shape )
+        Y = self.A@xSinList + selfB@xCostList;
 
     def dft(self, X=None, Y=None, h=None):
         if X is not None:
@@ -58,7 +63,7 @@ class RealFourier( Fourier ):
         self.A[0][0] = 0;
         self.B[0][0] = 1/(2*self.N)*np.sum( self.Y );
 
-        xSinList, xCosList = self.liftData( X );
+        xSinList, xCosList = self.generateSeries( X );
         for k in range( 1, self.N ):
             for y, xSin, xCos in zip( self.Y[0], xSinList[0], xCosList[0] ):
                 self.A[0][k] += y*xSin;
@@ -66,9 +71,6 @@ class RealFourier( Fourier ):
 
         self.A[0][-1] = 0;
         self.B[0][-1] = 0; # 1/(2*self.N)*np.sum( [ self.Y[0][j]*np.cos( 2*np.pi*self.N*self.X[0][j]/self.h ) for j in range( self.N ) ] );
-
-        print( self.A );
-        print( self.B );
 
         # Return instance of self.
         return self;
