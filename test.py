@@ -1,53 +1,29 @@
-import sys
-from os.path import expanduser
-sys.path.insert(0, expanduser('~')+'/prog/fourier');
-
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Personal classes.
 from FOUR.Fouriers import *
 
-# Hyper parameter(s).
-beta = 0.01;
+if __name__ == "__main__":
+    X = np.array( [[0, 1, 2, 3]] );
+    Y = np.array( [[0, 1, 1, 0]] );
+    Xdft = np.linspace(0,3,1000).reshape( 1,1000 );
 
-# Square wave initialization.
-def wave(x):
-    return np.sign( x );
+    # Results from handwritten notes.
+    f = lambda x: 1/2 + 1/2*np.sin( np.pi*x/2 ) - 1/2*np.cos( np.pi*x/2 );
+    Ydft = f( Xdft );
 
-if __name__ == '__main__':
-    # Generate x-data for square wave.
-    T = 0.03;  Nt = round( T/beta ) + 1;
-    X = np.array( [[beta*(i-Nt+1) for i in range( 2*Nt-1 )]] );
-    Y = wave( X );
+    # Results from class solver.
+    fvar = RealFourier( X, Y );
+    fvar.dft();
+    print( 'A:', fvar.A );
+    print( 'B:', fvar.B );
+    Ysolver = fvar.solve( Xdft );
 
-    print( 'X:\n', X );
-    print( 'Y:\n', Y );
+    fig, axs = plt.subplots()
+    plt.plot( X.T, Y.T, marker='o', label='true' );
+    plt.plot( Xdft.T, Ydft.T, linestyle='--', label='dft' );
+    plt.plot( Xdft.T, Ysolver.T, linestyle=':', label='solver' );
 
-    # Test Fourier method class.
-    fvar = RealFourier( h=beta );
-    fvar.dft( X, Y );
-
-    print( fvar.generateSeries( X )[1] );
-
-    # # Results data
-    # print( fvar.A.shape );
-    # print( fvar.B.shape );
-    # xSinList, xCosList = fvar.liftData( X );
-    # Yf = fvar.A@xSinList+ fvar.B@xCosList;
-
-    # print( X );
-    # print( Y );
-    # print( Yf );
-
-    print ( 'A:\n', fvar.A );
-    print ( 'B:\n', fvar.B );
-
-    Yf = fvar.propagate( X );
-
-    # Plot results
-    fig, axs = plt.subplots();
-    axs.plot( X.T, Y.T );
-    axs.plot( X.T, Yf.T );
-    axs.grid( 1 );
+    plt.legend();
+    plt.grid( 1 );
     plt.show();

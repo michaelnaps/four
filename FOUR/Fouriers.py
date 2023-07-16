@@ -84,7 +84,7 @@ class RealFourier( Fourier ):
 
         # Solve for when k = N.
         self.A[0,self.N] = 0;
-        self.B[0,self.N] = 1/(2*self.N)*sum( self.Y[0,:]*xCos[-1,:] );
+        self.B[0,self.N] = 1/(2*self.N)*sum( self.Y[0,:]*xCos[self.N,:] );
 
         # Return instance of self.
         return self;
