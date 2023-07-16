@@ -36,28 +36,36 @@ class Fourier:
 
 class RealFourier( Fourier ):
     def __init__(self, X, Y, N=None, dx=None):
+        # Intialize coefficient matrices to None.
         self.A = None;
         self.B = None;
+
+        # Initialize Fourier() as parent class.
         Fourier.__init__( self, X, Y, N=N, dx=dx );
         print( self.N, ', ', self.dx, ', ', self.tau );
 
     def serialize(self, X=None):
+        # If data set is given use instead of 'default'.
         if X is None:
             X = self.X
             M = 2*self.N;
         else:
             M = X.shape[1];
 
+        # Initialize serialized set matrices.
         xSin = np.zeros( (self.N+1, M) );
         xCos = np.ones(  (self.N+1, M) );
 
+        # Iterate through for varying frequencies.
         for k in range( 1, self.N+1 ):
             xSin[k,:] = np.sin( 2*np.pi*k*X[0,:]/self.tau );
             xCos[k,:] = np.cos( 2*np.pi*k*X[0,:]/self.tau );
 
+        # Return the serialized sets.
         return xSin, xCos;
 
     def dft(self):
+        # Serialize the given data set.
         xSin, xCos = self.serialize();
 
         print( 'sin:', xSin );
@@ -88,13 +96,21 @@ class RealFourier( Fourier ):
         return self;
 
     def solve(self, X=None):
+        # Is given set is none, use default.
         if X is None:
             X = self.X;
+
+        # Get serialized form of data set.
         xSin, xCos = self.serialize( X );
+
+        # Return approximation using coefficient matrices.
         return self.A@xSin + self.B@xCos;
 
 
 class ComplexFourier( Fourier ):
     def __init__(self, X, Y, N=None, dx=None):
+        # Intialize coefficient matrices to None.
         self.C = None;
+
+        # Initialize Fourier() as parent class.
         Fourier.__init__( self, X, Y, N=N, dx=dx );
