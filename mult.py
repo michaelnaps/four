@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 from FOUR.Fouriers import *
 
-datafile = 'data/xytest01.csv';
+datafile = 'draw/xytest01.csv';
 
 if __name__ == "__main__":
     # Import data set and create X/Y lists.
