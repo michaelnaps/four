@@ -6,6 +6,7 @@
 
 import numpy as np
 
+# Class: Fourier()
 class Fourier:
     def __init__(self, X, Y, N=None, dx=None):
         self.X = X;
@@ -34,6 +35,7 @@ class Fourier:
         return self;
 
 
+# Class: RealFourier()
 class RealFourier( Fourier ):
     def __init__(self, X, Y, N=None, dx=None):
         # Intialize coefficient matrices to None.
@@ -107,6 +109,7 @@ class RealFourier( Fourier ):
         return self.A@xSin + self.B@xCos;
 
 
+# Class: ComplexFourier()
 class ComplexFourier( Fourier ):
     def __init__(self, X, Y, N=None, dx=None):
         # Intialize coefficient matrices to None.
