@@ -7,15 +7,24 @@
 import numpy as np
 
 class Fourier:
-    def __init__(self, X=None, Y=None, N=-1, h=1e-3):
+    def __init__(self, X, Y, N=None, dx=None):
         self.X = X;
         self.Y = Y;
-        self.h = h;
-        self.N = N;
+
+        if N is None:
+            self.N = round( X.shape[1]/2 );
+        else:
+            self.N = N;
+
+        if dx is None:
+            self.dx = self.X[0,1] - self.X[0,0];
+        else:
+            dx = dx;
+
+        self.tau = self.X[0,-1] - self.X[0,0];
 
     def setDataSets(self, X, Y):
-        self.X = X;
-        self.Y = Y;
+        self.__init__( X, Y );
         # Return instance of self.
         return self;
 
@@ -26,62 +35,59 @@ class Fourier:
 
 
 class RealFourier( Fourier ):
-    def __init__(self, X=None, Y=None, N=-1, h=1e-3):
+    def __init__(self, X, Y, N=None, dx=None):
         self.A = None;
         self.B = None;
-        Fourier.__init__( self, X=X, Y=Y, N=N, h=h );
+        Fourier.__init__( self, X, Y, N=N, dx=dx );
+        print( self.N, self.dx, self.tau );
 
-    def generateSeries(self, X):
-        assert self.N != -1, "ERROR: Coefficient number, N, is not set."
-        M = X.shape[1];
-        xSinList = np.ones( (M, self.N) );
-        xCosList = np.empty( (M, self.N) );
-        for k in range( self.N ):
-            xSinList[:,k] = np.sin( 2*np.pi*k*X/self.h );
-            xCosList[:,k] = np.cos( 2*np.pi*k*X/self.h );
-        # Return sin(X) and cox(X) lists separately.
-        return xSinList, xCosList;
+    def serialize(self, X=None):
+        if X is None:
+            X = self.X
+            M = 2*self.N;
+        else:
+            M = X.shape[1];
 
-    def propagate(self, X):
-        assert self.A is not None, "ERROR: A coefficient vector is empty."
-        assert self.B is not None, "ERROR: B coefficient vector is empty."
-        xSinList, xCosList = self.generateSeries( X );
-        print( xSinList.shape, xCosList.shape )
-        # Return approximate solution using coefficient matrices.
-        return self.A@xSinList.T + self.B@xCosList.T;
+        xSin = np.empty( (self.N+1, M) );
+        xCos = np.empty( (self.N+1, M) );
 
-    def dft(self, X=None, Y=None, h=None):
-        if X is not None:
-            self.setDataSets( X, Y );
-        if h is not None:
-            self.h = h;
+        for k in range( self.N+1 ):
+            xSin[k,:] = np.sin( 2*np.pi*k*X[0,:]/self.tau );
+            xCos[k,:] = np.cos( 2*np.pi*k*X[0,:]/self.tau );
 
-        assert self.X is not None, "ERROR: X data set is empty."
-        assert self.Y is not None, "ERROR: Y data set is empty."
+        return xSin, xCos;
 
-        # Set expansion number (strict in DFT).
-        self.N = int( self.X.shape[1]/2 );
+    def dft(self):
+        xSin, xCos = self.serialize();
 
-        self.A = np.zeros( (1, self.N) );
-        self.B = np.zeros( (1, self.N) );
+        # Initialize coefficient vectors.
+        self.A = np.empty( (1, self.N+1) );
+        self.B = np.empty( (1, self.N+1) );
 
-        self.A[0][0] = 0;
-        self.B[0][0] = 1/(2*self.N)*np.sum( self.Y );
+        # Solve for when k=0.
+        self.A[0,0] = 0;
+        self.B[0,0] = 1/(2*self.N)*sum( self.Y[0] );
 
-        xSinList, xCosList = self.generateSeries( X );
-        for k in range( 1, self.N ):
-            for y, xSin, xCos in zip( self.Y[0], xSinList[:,k], xCosList[:,k] ):
-                self.A[0][k] += 1/self.N*y*xSin;
-                self.B[0][k] += 1/self.N*y*xCos;
+        # Solve for when 0 < k < N.
+        for k in range( 1,self.N ):
+            self.A[0,k] = 1/self.N*sum( self.Y[0,:]*xSin[k,:] );
+            self.B[0,k] = 1/self.N*sum( self.Y[0,:]*xCos[k,:] );
 
-        self.A[0][-1] = 0;
-        self.B[0][-1] = 1/(2*self.N)*np.sum( Y[:,-1]*xCosList[:,-1] );
+        # Solve for when k = N.
+        self.A[0,-1] = 0;
+        self.B[0,-1] = 1/(2*self.N)*sum( self.Y[0,:]*xCos[-1,:] );
 
         # Return instance of self.
         return self;
 
+    def solve(self, X=None):
+        if X is None:
+            X = self.X;
+        xSin, xCos = self.serialize( X );
+        return self.A@xSin + self.B@xCos;
+
 
 class ComplexFourier( Fourier ):
-    def __init__(self, X=None, Y=None, N=-1, h=1e-3):
+    def __init__(self, X, Y, N=None, dx=None):
         self.C = None;
-        Fourier.__init__( self, X=X, Y=Y, N=N, h=h );
+        Fourier.__init__( self, X, Y, N=N, dx=dx );
