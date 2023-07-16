@@ -6,8 +6,8 @@
 
 import numpy as np
 
-# Class: Fourier()
-class Fourier:
+# Class: Transform()
+class Transform:
     def __init__(self, X, Y, N=None, dx=None):
         self.X = X;
         self.Y = Y;
@@ -36,14 +36,14 @@ class Fourier:
 
 
 # Class: RealFourier()
-class RealFourier( Fourier ):
+class RealFourier( Transform ):
     def __init__(self, X, Y, N=None, dx=None):
         # Intialize coefficient matrices to None.
         self.A = None;
         self.B = None;
 
-        # Initialize Fourier() as parent class.
-        Fourier.__init__( self, X, Y, N=N, dx=dx );
+        # Initialize Transform() as parent class.
+        Transform.__init__( self, X, Y, N=N, dx=dx );
 
     def serialize(self, X=None):
         # If data set is given use instead of 'default'.
@@ -102,10 +102,10 @@ class RealFourier( Fourier ):
 
 
 # Class: ComplexFourier()
-class ComplexFourier( Fourier ):
+class ComplexFourier( Transform ):
     def __init__(self, X, Y, N=None, dx=None):
         # Intialize coefficient matrices to None.
         self.C = None;
 
-        # Initialize Fourier() as parent class.
-        Fourier.__init__( self, X, Y, N=N, dx=dx );
+        # Initialize Transform() as parent class.
+        Transform.__init__( self, X, Y, N=N, dx=dx );
