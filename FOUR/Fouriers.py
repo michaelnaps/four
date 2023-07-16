@@ -39,7 +39,7 @@ class RealFourier( Fourier ):
         self.A = None;
         self.B = None;
         Fourier.__init__( self, X, Y, N=N, dx=dx );
-        print( self.N, self.dx, self.tau );
+        print( self.N, ', ', self.dx, ', ', self.tau );
 
     def serialize(self, X=None):
         if X is None:
@@ -48,10 +48,10 @@ class RealFourier( Fourier ):
         else:
             M = X.shape[1];
 
-        xSin = np.empty( (self.N+1, M) );
-        xCos = np.empty( (self.N+1, M) );
+        xSin = np.zeros( (self.N+1, M) );
+        xCos = np.ones(  (self.N+1, M) );
 
-        for k in range( self.N+1 ):
+        for k in range( 1, self.N+1 ):
             xSin[k,:] = np.sin( 2*np.pi*k*X[0,:]/self.tau );
             xCos[k,:] = np.cos( 2*np.pi*k*X[0,:]/self.tau );
 
@@ -60,22 +60,29 @@ class RealFourier( Fourier ):
     def dft(self):
         xSin, xCos = self.serialize();
 
+        print( 'sin:', xSin );
+        print( 'cos:', xCos );
+
         # Initialize coefficient vectors.
         self.A = np.empty( (1, self.N+1) );
         self.B = np.empty( (1, self.N+1) );
 
         # Solve for when k=0.
         self.A[0,0] = 0;
-        self.B[0,0] = 1/(2*self.N)*sum( self.Y[0] );
+        self.B[0,0] = 1/(2*self.N)*sum( self.Y[0,:] );
 
         # Solve for when 0 < k < N.
         for k in range( 1,self.N ):
+            print( k );
+            print( self.Y[0,:]*xSin[k,:] );
+            print( self.Y[0,:]*xCos[k,:] );
+            print( '--------------------' );
             self.A[0,k] = 1/self.N*sum( self.Y[0,:]*xSin[k,:] );
             self.B[0,k] = 1/self.N*sum( self.Y[0,:]*xCos[k,:] );
 
         # Solve for when k = N.
-        self.A[0,-1] = 0;
-        self.B[0,-1] = 1/(2*self.N)*sum( self.Y[0,:]*xCos[-1,:] );
+        self.A[0,self.N] = 0;
+        self.B[0,self.N] = 1/(2*self.N)*sum( self.Y[0,:]*xCos[-1,:] );
 
         # Return instance of self.
         return self;
