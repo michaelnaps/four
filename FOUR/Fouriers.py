@@ -22,7 +22,7 @@ class Fourier:
         else:
             dx = dx;
 
-        self.tau = self.X[0,-1] - self.X[0,0];
+        self.tau = 2*self.N*self.dx;
 
     def setDataSets(self, X, Y):
         self.__init__( X, Y );
@@ -44,7 +44,6 @@ class RealFourier( Fourier ):
 
         # Initialize Fourier() as parent class.
         Fourier.__init__( self, X, Y, N=N, dx=dx );
-        print( self.N, ', ', self.dx, ', ', self.tau );
 
     def serialize(self, X=None):
         # If data set is given use instead of 'default'.
@@ -70,9 +69,6 @@ class RealFourier( Fourier ):
         # Serialize the given data set.
         xSin, xCos = self.serialize();
 
-        print( 'sin:', xSin );
-        print( 'cos:', xCos );
-
         # Initialize coefficient vectors.
         self.A = np.empty( (1, self.N+1) );
         self.B = np.empty( (1, self.N+1) );
@@ -83,10 +79,6 @@ class RealFourier( Fourier ):
 
         # Solve for when 0 < k < N.
         for k in range( 1,self.N ):
-            print( k );
-            print( self.Y[0,:]*xSin[k,:] );
-            print( self.Y[0,:]*xCos[k,:] );
-            print( '--------------------' );
             self.A[0,k] = 1/self.N*sum( self.Y[0,:]*xSin[k,:] );
             self.B[0,k] = 1/self.N*sum( self.Y[0,:]*xCos[k,:] );
 
