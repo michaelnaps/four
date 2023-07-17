@@ -12,7 +12,7 @@ if __name__ == "__main__":
     points = csvcontents[ ['x','y'] ].to_numpy();
 
     # Extract and form data vectors.
-    Nx = len( points  );
+    Nx = len( points );
     T = np.array( [ [i for i in range( Nx )] ] );
     X = points[:,0].reshape( 1,Nx );
     Y = points[:,1].reshape( 1,Nx );
