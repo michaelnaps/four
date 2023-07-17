@@ -44,4 +44,10 @@ if __name__ == "__main__":
     # Initialize vehicle.
     t = np.array( [[0]] );
     x = fvar.solve( t );
-    vhc = Vehicle2D( fvar.solve, x );
+    vhc = Vehicle2D( fvar.solve, x, radius=10, tail_length=300 );
+    vhc.setLimits( xlim=(-50, 700), ylim=(-50, 500) );
+    vhc.draw();
+    while t < 1000:
+        t += 1;
+        x = fvar.solve( t );
+        vhc.update( x );
