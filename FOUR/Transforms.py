@@ -60,6 +60,7 @@ class RealFourier( Transform ):
 
         # Iterate through for varying frequencies.
         for k in range( 1, self.N+1 ):
+            print( 'T:', T[0,:] );
             tSin[k,:] = np.sin( 2*np.pi*k*T[0,:]/self.tau );
             tCos[k,:] = np.cos( 2*np.pi*k*T[0,:]/self.tau );
 
