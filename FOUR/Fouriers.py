@@ -8,24 +8,24 @@ import numpy as np
 
 # Class: Transform()
 class Transform:
-    def __init__(self, X, Y, N=None, dx=None):
+    def __init__(self, T, X, N=None, dt=None):
+        self.T = T;
         self.X = X;
-        self.Y = Y;
 
         if N is None:
-            self.N = round( X.shape[1]/2 );
+            self.N = round( T.shape[1]/2 );
         else:
             self.N = N;
 
-        if dx is None:
-            self.dx = self.X[0,1] - self.X[0,0];
+        if dt is None:
+            self.dt = self.T[0,1] - self.T[0,0];
         else:
-            dx = dx;
+            dt = dt;
 
-        self.tau = 2*self.N*self.dx;
+        self.tau = 2*self.N*self.dt;
 
-    def setDataSets(self, X, Y):
-        self.__init__( X, Y );
+    def setDataSets(self, T, X):
+        self.__init__( T, X );
         # Return instance of self.
         return self;
 
@@ -37,75 +37,86 @@ class Transform:
 
 # Class: RealFourier()
 class RealFourier( Transform ):
-    def __init__(self, X, Y, N=None, dx=None):
+    def __init__(self, T, X, N=None, dt=None):
         # Intialize coefficient matrices to None.
         self.A = None;
         self.B = None;
+        self.Nx = X.shape[0];
 
         # Initialize Transform() as parent class.
-        Transform.__init__( self, X, Y, N=N, dx=dx );
+        Transform.__init__( self, T, X, N=N, dt=dt );
 
-    def serialize(self, X=None):
+    def serialize(self, T=None):
         # If data set is given use instead of 'default'.
-        if X is None:
-            X = self.X
+        if T is None:
+            T = self.T
             M = 2*self.N;
         else:
-            M = X.shape[1];
+            M = T.shape[1];
 
         # Initialize serialized set matrices.
-        xSin = np.zeros( (self.N+1, M) );
-        xCos = np.ones(  (self.N+1, M) );
+        tSin = np.zeros( (self.N+1, M) );
+        tCos = np.ones(  (self.N+1, M) );
 
         # Iterate through for varying frequencies.
         for k in range( 1, self.N+1 ):
-            xSin[k,:] = np.sin( 2*np.pi*k*X[0,:]/self.tau );
-            xCos[k,:] = np.cos( 2*np.pi*k*X[0,:]/self.tau );
+            tSin[k,:] = np.sin( 2*np.pi*k*T[0,:]/self.tau );
+            tCos[k,:] = np.cos( 2*np.pi*k*T[0,:]/self.tau );
 
         # Return the serialized sets.
-        return xSin, xCos;
+        return tSin, tCos;
 
     def dft(self):
         # Serialize the given data set.
-        xSin, xCos = self.serialize();
+        tSin, tCos = self.serialize();
 
         # Initialize coefficient vectors.
-        self.A = np.empty( (1, self.N+1) );
-        self.B = np.empty( (1, self.N+1) );
+        self.A = np.empty( (self.Nx, self.N+1) );
+        self.B = np.empty( (self.Nx, self.N+1) );
 
-        # Solve for when k=0.
-        self.A[0,0] = 0;
-        self.B[0,0] = 1/(2*self.N)*sum( self.Y[0,:] );
+        for i in range( self.Nx ):
+            # Solve for when k=0.
+            self.A[i,0] = 0;
+            self.B[i,0] = 1/(2*self.N)*sum( self.X[i,:] );
 
-        # Solve for when 0 < k < N.
-        for k in range( 1,self.N ):
-            self.A[0,k] = 1/self.N*sum( self.Y[0,:]*xSin[k,:] );
-            self.B[0,k] = 1/self.N*sum( self.Y[0,:]*xCos[k,:] );
+            # Solve for when 0 < k < N.
+            for k in range( 1,self.N ):
+                self.A[i,k] = 1/self.N*sum( self.X[i,:]*tSin[k,:] );
+                self.B[i,k] = 1/self.N*sum( self.X[i,:]*tCos[k,:] );
 
-        # Solve for when k = N.
-        self.A[0,self.N] = 0;
-        self.B[0,self.N] = 1/(2*self.N)*sum( self.Y[0,:]*xCos[self.N,:] );
+            # Solve for when k = N.
+            self.A[i,self.N] = 0;
+            self.B[i,self.N] = 1/(2*self.N)*sum( self.X[i,:]*tCos[self.N,:] );
 
         # Return instance of self.
         return self;
 
-    def solve(self, X=None):
+    def solve(self, T=None):
         # Is given set is none, use default.
-        if X is None:
-            X = self.X;
+        if T is None:
+            T = self.T;
+            Nt = 2*self.N;
+        else:
+            Nt = T.shape[1];
 
         # Get serialized form of data set.
-        xSin, xCos = self.serialize( X );
+        tSin, tCos = self.serialize( T );
 
-        # Return approximation using coefficient matrices.
-        return self.A@xSin + self.B@xCos;
+        # Return approtimation using coefficient matrices.
+        Y = np.empty( (self.Nx, Nt) );
+        print( Y );
+        print( self.A )
+        print( self.B )
+        for i in range( self.Nx ):
+            Y[i,:] = self.A[i,:]@tSin + self.B[i,:]@tCos;
+        return Y;
 
 
 # Class: ComplexFourier()
 class ComplexFourier( Transform ):
-    def __init__(self, X, Y, N=None, dx=None):
+    def __init__(self, T, X, N=None, dt=None):
         # Intialize coefficient matrices to None.
         self.C = None;
 
         # Initialize Transform() as parent class.
-        Transform.__init__( self, X, Y, N=N, dx=dx );
+        Transform.__init__( self, T, X, N=N, dt=dt );
