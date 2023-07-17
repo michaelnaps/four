@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.8
+# pyinstaller --onefile mult.py
 import sys
 from os.path import expanduser
 sys.path.insert( 0, expanduser('~')+'/prog/mpc' );
