@@ -1,8 +1,13 @@
+import sys
+from os.path import expanduser
+sys.path.insert( 0, expanduser('~')+'/prog/mpc' );
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-from FOUR.Fouriers import *
+from FOUR.Transforms import *
+from MPC.Vehicle2D import *
 
 datafile = 'data/xytest01.csv';
 
@@ -22,23 +27,21 @@ if __name__ == "__main__":
     fvar = RealFourier( T, XY );
     fvar.dft();
 
-    # print( 'X:' );
-    # print( '\tA:', fxvar.A );
-    # print( '\tB:', fxvar.B );
-    # print( 'Y:' );
-    # print( '\tA:', fyvar.A );
-    # print( '\tB:', fyvar.B );
+    # # Compute comparison vectors.
+    # dt = 0.01;
+    # Nf = round( Nx/dt );
+    # Tf = np.array( [[ i*dt for i in range( Nf ) ]] );
+    # XYf = fvar.solve( Tf );
 
-    # Compute comparison vectors.
-    dt = 0.01;
-    Nf = round( Nx/dt );
-    Tf = np.array( [[ i*dt for i in range( Nf ) ]] );
-    XYf = fvar.solve( Tf );
+    # # Plot results.
+    # fig, axs = plt.subplots();
+    # axs.plot( X.T, Y.T, label='Drawing' );
+    # axs.plot( XYf[0], XYf[1], linestyle='--', label='Fourier' );
+    # plt.legend();
+    # plt.grid( 1 );
+    # plt.show();
 
-    # Plot results.
-    fig, axs = plt.subplots();
-    axs.plot( X.T, Y.T, label='Drawing' );
-    axs.plot( XYf[0], XYf[1], linestyle='--', label='Fourier' );
-    plt.legend();
-    plt.grid( 1 );
-    plt.show();
+    # Initialize vehicle.
+    t = np.array( [[0]] );
+    x = fvar.solve( t );
+    vhc = Vehicle2D( fvar.solve, x );

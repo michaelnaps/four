@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from FOUR.Fouriers import *
+from FOUR.Transforms import *
 
 if __name__ == "__main__":
     # Generate random data set with equally spaced points.

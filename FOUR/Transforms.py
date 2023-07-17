@@ -104,9 +104,6 @@ class RealFourier( Transform ):
 
         # Return approtimation using coefficient matrices.
         Y = np.empty( (self.Nx, Nt) );
-        print( Y );
-        print( self.A )
-        print( self.B )
         for i in range( self.Nx ):
             Y[i,:] = self.A[i,:]@tSin + self.B[i,:]@tCos;
         return Y;

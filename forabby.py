@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-from FOUR.Fouriers import *
+from FOUR.Transforms import *
 
 datafile = 'data/abbydrawing.csv';
 
