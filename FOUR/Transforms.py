@@ -63,8 +63,6 @@ class RealFourier( Transform ):
         tSin = np.zeros( (self.N+1, M) );
         tCos = np.ones(  (self.N+1, M) );
 
-        print( tSin.shape );
-
         # Iterate through for varying frequencies.
         for k in range( 1, self.N+1 ):
             tSin[k,:] = np.sin( 2*np.pi*k*T[0,:]/self.tau );
@@ -113,9 +111,6 @@ class RealFourier( Transform ):
         # Set coefficient vectors.
         self.A = C[:,:self.N+1];
         self.B = C[:,self.N+1:];
-
-        print( self.A.shape );
-        print( self.B.shape );
 
         # Return instance of self.
         return self;

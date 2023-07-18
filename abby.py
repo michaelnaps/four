@@ -37,7 +37,9 @@ if __name__ == "__main__":
     # Fourier series lists.
     flist = [ RealFourier( T, X ) for X, T in zip( Xlist, Tlist ) ];
     for fvar in flist:
-        fvar.dft();
+        # print( fvar.N );
+        # fvar.dft();
+        fvar.ls( N=150 );
 
     # Initial conditions.
     t = np.array( [[0]] );
@@ -58,7 +60,8 @@ if __name__ == "__main__":
     # Simulate.
     dt = 0.5;
     t = t + dt;
-    while t < 10000:
+    ans = input( "Press ENTER to start simulation..." );
+    while t < 10000 and ans != 'n':
         xh = flist[0].solve( t );
         xm = flist[1].solve( t );
         xa = flist[3].solve( t );
@@ -68,3 +71,5 @@ if __name__ == "__main__":
         abby.update( xa );
 
         t = t + dt;
+    if ans != 'n':
+        input( "Press ENTER to end program..." );
