@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from MPC.Vehicle2D import *
 from FOUR.Transforms import *
 
-datafile = 'data/abbydrawing01.csv';
+datafile = 'data/abbydrawing03.csv';
 
 if __name__ == "__main__":
     # Import data set and create X/Y lists.
@@ -43,32 +43,31 @@ if __name__ == "__main__":
 
     # Initial conditions.
     t = np.array( [[0]] );
-    xh = flist[0].solve( t );
-    xm = flist[1].solve( t );
-    xa = flist[3].solve( t );
+    xa = flist[0].solve( t );
+    xm = flist[2].solve( t );
+    xh = flist[3].solve( t );
 
     # Create vehicles.
     fig, axs = plt.subplots();
-    hat1 = Vehicle2D( None, xh, fig=fig, axs=axs, vhc_color='k', tail_length=2500 );
-    mike = Vehicle2D( None, xm, fig=fig, axs=axs, vhc_color='k', tail_length=2500 );
     abby = Vehicle2D( None, xa, fig=fig, axs=axs, vhc_color='k', tail_length=2500 );
-    abby.setLimits( xlim=(100,550), ylim=(40,450) );
+    mike = Vehicle2D( None, xm, fig=fig, axs=axs, vhc_color='k', tail_length=2500 );
+    hat1 = Vehicle2D( None, xh, fig=fig, axs=axs, vhc_color='k', tail_length=2500 );
+    abby.setLimits( xlim=(-10,500), ylim=(-25,400) );
 
     axs.grid( 0 );
     abby.draw();
 
     # Simulate.
-    dt = 0.5;
-    t = t + dt;
+    dt = 1;  t = t + dt;
     ans = input( "Press ENTER to start simulation..." );
     while t < 10000 and ans != 'n':
-        xh = flist[0].solve( t );
-        xm = flist[1].solve( t );
-        xa = flist[3].solve( t );
+        xa = flist[0].solve( 4.0*t );
+        xm = flist[2].solve( 1.5*t );
+        xh = flist[3].solve( 1.0*t );
 
-        hat1.update( xh, pause=0 );
+        abby.update( xa, pause=0 );
         mike.update( xm, pause=0 );
-        abby.update( xa );
+        hat1.update( xh );
 
         t = t + dt;
     if ans != 'n':
