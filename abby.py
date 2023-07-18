@@ -39,7 +39,7 @@ if __name__ == "__main__":
     for fvar in flist:
         # print( fvar.N );
         # fvar.dft();
-        fvar.ls( N=150 );
+        fvar.ls( N=100 );
 
     # Initial conditions.
     t = np.array( [[0]] );
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     abby = Vehicle2D( None, xa, fig=fig, axs=axs, vhc_color='k', tail_length=2500 );
     mike = Vehicle2D( None, xm, fig=fig, axs=axs, vhc_color='k', tail_length=2500 );
     hat1 = Vehicle2D( None, xh, fig=fig, axs=axs, vhc_color='k', tail_length=2500 );
-    abby.setLimits( xlim=(-10,500), ylim=(-25,400) );
+    abby.setLimits( xlim=(0,500), ylim=(0,400) );
 
     axs.grid( 0 );
     abby.draw();
