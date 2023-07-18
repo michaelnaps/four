@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from MPC.Vehicle2D import *
 from FOUR.Transforms import *
 
-datafile = 'data/abbydrawing.csv';
+datafile = 'data/abbydrawing01.csv';
 
 if __name__ == "__main__":
     # Import data set and create X/Y lists.
@@ -47,9 +47,9 @@ if __name__ == "__main__":
 
     # Create vehicles.
     fig, axs = plt.subplots();
-    hat1 = Vehicle2D( None, xh, fig=fig, axs=axs, vhc_color='k', tail_length=1200 );
-    mike = Vehicle2D( None, xm, fig=fig, axs=axs, vhc_color='k', tail_length=1200 );
-    abby = Vehicle2D( None, xa, fig=fig, axs=axs, vhc_color='k', tail_length=1200 );
+    hat1 = Vehicle2D( None, xh, fig=fig, axs=axs, vhc_color='k', tail_length=2500 );
+    mike = Vehicle2D( None, xm, fig=fig, axs=axs, vhc_color='k', tail_length=2500 );
+    abby = Vehicle2D( None, xa, fig=fig, axs=axs, vhc_color='k', tail_length=2500 );
     abby.setLimits( xlim=(100,550), ylim=(40,450) );
 
     axs.grid( 0 );
