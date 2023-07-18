@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 from FOUR.Transforms import *
 
 # Hyper parameter(s).
-Nmax = 100
-dN = 20
+Nmax = 20
+dN = 4
 beta = 0.01
 
 # Square wave initialization.
@@ -31,9 +31,8 @@ if __name__ == '__main__':
     axs.plot( X.T, Y.T, color='r', label='Model' )
 
     for n in range( 0, Nmax+1, dN ):
+        if n == 0:  n = n + 1;
         fvar.ls( N=n )
-        print( n )
-
         Yf = fvar.solve( X )
         axs.plot( X.T, Yf.T, linestyle=None, label=('N=%i' % n) )
 
