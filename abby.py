@@ -1,4 +1,10 @@
 # pyinstaller --onefile mult.py
+# File: abby.py
+# Created by: Michael Napoli
+# Created for: Abby Feldmann
+# Purpose: To draw a line-based sketch using Fourier series of
+#   a boy and a girl.
+
 import sys
 from os.path import expanduser
 sys.path.insert( 0, expanduser('~')+'/prog/mpc' );
@@ -39,9 +45,10 @@ if __name__ == "__main__":
     for fvar in flist:
         # print( fvar.N );
         # fvar.dft();
-        fvar.ls( N=100 );
+        fvar.ls( N=75 );
 
     # Initial conditions.
+    glist = [ 4.0, 0.0, 1.5, 1.0 ];
     t = np.array( [[0]] );
     xa = flist[0].solve( t );
     xm = flist[2].solve( t );
@@ -49,11 +56,19 @@ if __name__ == "__main__":
 
     # Create vehicles.
     fig, axs = plt.subplots();
-    abby = Vehicle2D( None, xa, fig=fig, axs=axs, vhc_color='k', tail_length=2500 );
-    mike = Vehicle2D( None, xm, fig=fig, axs=axs, vhc_color='k', tail_length=2500 );
-    hat1 = Vehicle2D( None, xh, fig=fig, axs=axs, vhc_color='k', tail_length=2500 );
+    axs.set_title( 'Abby and Michael' );
+
+    abby = Vehicle2D( None, xa, fig=fig, axs=axs,
+        vhc_color='plum', tail_length=round( Nlist[0]/glist[0] )-5 );
+    mike = Vehicle2D( None, xm, fig=fig, axs=axs,
+        vhc_color='cornflowerblue', tail_length=round( Nlist[2]/glist[2] )-5 );
+    hat1 = Vehicle2D( None, xh, fig=fig, axs=axs,
+        vhc_color='sandybrown', tail_length=round( Nlist[3]/glist[3] )-5 );
+    abby.setFigureDimensions( w=5, h=4 )
     abby.setLimits( xlim=(0,500), ylim=(0,400) );
 
+    axs.axes.xaxis.set_ticklabels( [] );
+    axs.axes.yaxis.set_ticklabels( [] );
     axs.grid( 0 );
     abby.draw();
 
@@ -61,9 +76,9 @@ if __name__ == "__main__":
     dt = 1;  t = t + dt;
     ans = input( "Press ENTER to start simulation..." );
     while t < 10000 and ans != 'n':
-        xa = flist[0].solve( 4.0*t );
-        xm = flist[2].solve( 1.5*t );
-        xh = flist[3].solve( 1.0*t );
+        xa = flist[0].solve( glist[0]*t );
+        xm = flist[2].solve( glist[2]*t );
+        xh = flist[3].solve( glist[3]*t );
 
         abby.update( xa, pause=0 );
         mike.update( xm, pause=0 );
