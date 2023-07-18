@@ -4,7 +4,12 @@
 # Purpose: To develop and study various methods of expanding
 #   and solving real/complex Fourier series.
 
+import sys
+from os.path import expanduser
+sys.path.insert( 0, expanduser('~')+'/prog/kman' );
+
 import numpy as np
+from KMAN.Regressors import *
 
 # Class: Transform()
 class Transform:
@@ -50,13 +55,15 @@ class RealFourier( Transform ):
         # If data set is given use instead of 'default'.
         if T is None:
             T = self.T
-            M = 2*self.N;
+            M = self.T.shape[1];
         else:
             M = T.shape[1];
 
         # Initialize serialized set matrices.
         tSin = np.zeros( (self.N+1, M) );
         tCos = np.ones(  (self.N+1, M) );
+
+        print( tSin.shape );
 
         # Iterate through for varying frequencies.
         for k in range( 1, self.N+1 ):
@@ -87,6 +94,28 @@ class RealFourier( Transform ):
             # Solve for when k = N.
             self.A[i,self.N] = 0;
             self.B[i,self.N] = 1/(2*self.N)*sum( self.X[i,:]*tCos[self.N,:] );
+
+        # Return instance of self.
+        return self;
+
+    def ls(self, N=None):
+        # Set number of cos/sin terms.
+        if N is not None:
+            self.N = N;
+
+        # Serialize and stack the data set.
+        TSinCos = np.vstack( self.serialize() );
+
+        # Initialize the regressor variable and solve.
+        regr = Regressor( TSinCos, self.X );
+        C, _ = regr.ls();
+
+        # Set coefficient vectors.
+        self.A = C[:,:self.N+1];
+        self.B = C[:,self.N+1:];
+
+        print( self.A.shape );
+        print( self.B.shape );
 
         # Return instance of self.
         return self;

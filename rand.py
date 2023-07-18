@@ -14,6 +14,7 @@ if __name__ == "__main__":
     # Results from class solver.
     fvar = RealFourier( X, Y );
     fvar.dft();
+    # fvar.ls();
     print( 'Error:', np.linalg.norm( Y - fvar.solve( X ) ) );
     print( 'A:', fvar.A );
     print( 'B:', fvar.B );
