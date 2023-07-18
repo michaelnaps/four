@@ -1,7 +1,13 @@
+# pyinstaller --onefile mult.py
+import sys
+from os.path import expanduser
+sys.path.insert( 0, expanduser('~')+'/prog/mpc' );
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+from MPC.Vehicle2D import *
 from FOUR.Transforms import *
 
 datafile = 'data/abbydrawing.csv';
@@ -18,7 +24,7 @@ if __name__ == "__main__":
         data[ data['z']=='d' ].to_numpy()[:,:2].T
     ];
 
-    # Size of data sets.
+    # Size of data sets - make sets even.
     Nlist = [ X.shape[1] for X in Xlist ];
     for i, N in enumerate( Nlist ):
         if N % 2 != 0:
@@ -33,10 +39,32 @@ if __name__ == "__main__":
     for fvar in flist:
         fvar.dft();
 
-    # # Plot data.
-    # fig, axs = plt.subplots();
-    # axs.plot( hat1[:,0], hat1[:,1], label='hat1' );
-    # axs.plot( mike[:,0], mike[:,1], label='mike' );
-    # axs.plot( abby[:,0], abby[:,1], label='abby' );
-    # plt.legend();
-    # plt.show();
+    # Initial conditions.
+    t = np.array( [[0]] );
+    xh = flist[0].solve( t );
+    xm = flist[1].solve( t );
+    xa = flist[3].solve( t );
+
+    # Create vehicles.
+    fig, axs = plt.subplots();
+    hat1 = Vehicle2D( None, xh, fig=fig, axs=axs, vhc_color='k', tail_length=10000 );
+    mike = Vehicle2D( None, xm, fig=fig, axs=axs, vhc_color='k', tail_length=10000 );
+    abby = Vehicle2D( None, xa, fig=fig, axs=axs, vhc_color='k', tail_length=10000 );
+    abby.setLimits( xlim=(100,550), ylim=(40,450) );
+
+    axs.grid( 0 );
+    abby.draw();
+
+    # Simulate.
+    dt = 0.5;
+    t = t + dt;
+    while t < 10000:
+        xh = flist[0].solve( t );
+        xm = flist[1].solve( t );
+        xa = flist[3].solve( t );
+
+        hat1.update( xh, pause=0 );
+        mike.update( xm, pause=0 );
+        abby.update( xa );
+
+        t = t + dt;
