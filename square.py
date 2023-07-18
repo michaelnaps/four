@@ -1,6 +1,6 @@
 import sys
 from os.path import expanduser
-sys.path.insert(0, expanduser('~')+'/prog/kman');
+sys.path.insert(0, expanduser('~')+'/prog/kman')
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,34 +9,34 @@ import matplotlib.pyplot as plt
 from FOUR.Transforms import *
 
 # Hyper parameter(s).
-Nmax = 100;
-dN = 20;
-beta = 0.01;
+Nmax = 100
+dN = 20
+beta = 0.01
 
 # Square wave initialization.
 def wave(x):
-    return np.sign( x );
+    return np.sign( x )
 
 if __name__ == '__main__':
     # Generate x-data for square wave.
-    T = 1;  Nt = round( T/beta ) + 1;
-    X = np.array( [[beta*(i-Nt+1) for i in range( 2*Nt )]] );
-    Y = wave( X );
+    T = 1;  Nt = round( T/beta ) + 1
+    X = np.array( [[beta*(i-Nt+1) for i in range( 2*Nt )]] )
+    Y = wave( X )
 
     # Initialize solver variable.
-    fvar = RealFourier( X, Y );
+    fvar = RealFourier( X, Y )
 
     # Plot results.
-    fig, axs = plt.subplots();
-    axs.plot( X.T, Y.T, color='r', label='Model' );
+    fig, axs = plt.subplots()
+    axs.plot( X.T, Y.T, color='r', label='Model' )
 
     for n in range( 0, Nmax+1, dN ):
-        fvar.ls( N=n );
-        print( n );
+        fvar.ls( N=n )
+        print( n )
 
-        Yf = fvar.solve( X );
-        axs.plot( X.T, Yf.T, linestyle=None, label=('N=%i' % n) );
+        Yf = fvar.solve( X )
+        axs.plot( X.T, Yf.T, linestyle=None, label=('N=%i' % n) )
 
-    plt.grid( 1 );
-    plt.legend();
-    plt.show();
+    plt.grid( 1 )
+    plt.legend()
+    plt.show()
