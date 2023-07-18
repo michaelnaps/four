@@ -67,6 +67,7 @@ if __name__ == "__main__":
     abby.setFigureDimensions( w=5, h=4 )
     abby.setLimits( xlim=(0,500), ylim=(0,400) );
 
+    fig.tight_layout();
     axs.axes.xaxis.set_ticklabels( [] );
     axs.axes.yaxis.set_ticklabels( [] );
     axs.grid( 0 );
