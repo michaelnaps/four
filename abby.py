@@ -58,11 +58,11 @@ if __name__ == "__main__":
     fig, axs = plt.subplots()
     axs.set_title( 'Abby and Michael' )
 
-    abby = Vehicle2D( None, xa, fig=fig, axs=axs,
+    abby = Vehicle2D( xa, fig=fig, axs=axs,
         vhc_color='plum', tail_length=round( Nlist[0]/glist[0] )-5 )
-    mike = Vehicle2D( None, xm, fig=fig, axs=axs,
+    mike = Vehicle2D( xm, fig=fig, axs=axs,
         vhc_color='cornflowerblue', tail_length=round( Nlist[2]/glist[2] )-5 )
-    hat1 = Vehicle2D( None, xh, fig=fig, axs=axs,
+    hat1 = Vehicle2D( xh, fig=fig, axs=axs,
         vhc_color='sandybrown', tail_length=round( Nlist[3]/glist[3] )-5 )
     abby.setFigureDimensions( w=5, h=4 )
     abby.setLimits( xlim=(0,500), ylim=(0,400) )
