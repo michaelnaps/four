@@ -7,6 +7,7 @@
 
 import sys
 from os.path import expanduser
+sys.path.insert( 0, expanduser('~')+'/prog/four' )
 sys.path.insert( 0, expanduser('~')+'/prog/mpc' )
 
 import pandas as pd
@@ -16,7 +17,8 @@ import matplotlib.pyplot as plt
 from MPC.Vehicle2D import *
 from FOUR.Transforms import *
 
-datafile = 'data/abbydrawing03.csv'
+plt.style.use( 'dark_background' )
+datafile = '/home/michaelnaps/prog/four/data/abbydrawing03.csv'
 
 if __name__ == "__main__":
     # Import data set and create X/Y lists.
@@ -76,7 +78,7 @@ if __name__ == "__main__":
     # Simulate.
     dt = 1;  t = t + dt
     ans = input( "Press ENTER to start simulation..." )
-    while t < 10000 and ans != 'n':
+    while ans != 'n':
         xa = flist[0].solve( glist[0]*t )
         xm = flist[2].solve( glist[2]*t )
         xh = flist[3].solve( glist[3]*t )
