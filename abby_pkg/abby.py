@@ -86,7 +86,7 @@ if __name__ == "__main__":
     # Simulate.
     dt = 1;  t = t + dt
     ans = input( "Press ENTER to start simulation..." )
-    while ans != 'n':
+    while t < 2500 and ans != 'n':
         xa = flist[0].solve( glist[0]*t )
         if sim_glasses and t > 250:
             xg = flist[1].solve( glist[1]*(t - 250) )

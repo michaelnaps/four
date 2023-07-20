@@ -46,8 +46,8 @@ if __name__ == "__main__":
     dt = 0.1
     t = np.array( [[0]] )
     x = fvar.solve( t )
-    vhc = Vehicle2D( fvar.solve, x,
-        fig=fig, axs=axs, radius=10, tail_length=3000 )
+    vhc = Vehicle2D( x, fig=fig, axs=axs,
+        radius=10, tail_length=3000 )
     vhc.setLimits( xlim=(-50, 700), ylim=(-50, 500) )
     vhc.draw()
     while t < 500:
