@@ -18,7 +18,7 @@ from MPC.Vehicle2D import *
 from FOUR.Transforms import *
 
 plt.style.use( 'dark_background' )
-datafile = '/home/michaelnaps/prog/four/data/abbydrawing03.csv'
+datafile = '/home/michaelnaps/prog/four/data/abbydrawing04.csv'
 
 if __name__ == "__main__":
     # Import data set and create X/Y lists.
@@ -50,25 +50,32 @@ if __name__ == "__main__":
         fvar.ls( N=75 )
 
     # Initial conditions.
-    glist = [ 4.0, 0.0, 1.5, 1.0 ]
+    sim_glasses = 0
+    glist = [ 4.0, 0.75, 2.0, 3.0 ]
     t = np.array( [[0]] )
     xa = flist[0].solve( t )
+    xg = flist[1].solve( t )
     xm = flist[2].solve( t )
     xh = flist[3].solve( t )
 
-    # Create vehicles.
+    # Initialize plots.
     fig, axs = plt.subplots()
     axs.set_title( 'Abby and Michael' )
 
-    abby = Vehicle2D( xa, fig=fig, axs=axs,
+    # Vehicle variables.
+    abby = Vehicle2D( xa, fig=fig, axs=axs, zorder=200,
         vhc_color='plum', tail_length=round( Nlist[0]/glist[0] )-5 )
-    mike = Vehicle2D( xm, fig=fig, axs=axs,
+    if sim_glasses:
+        glss = Vehicle2D( xg, fig=fig, axs=axs, zorder=150,
+        vhc_color='yellowgreen', tail_length=round( Nlist[1]/glist[1] )-5 )
+    mike = Vehicle2D( xm, fig=fig, axs=axs, zorder=50,
         vhc_color='cornflowerblue', tail_length=round( Nlist[2]/glist[2] )-5 )
-    hat1 = Vehicle2D( xh, fig=fig, axs=axs,
+    hat1 = Vehicle2D( xh, fig=fig, axs=axs, zorder=100,
         vhc_color='sandybrown', tail_length=round( Nlist[3]/glist[3] )-5 )
-    abby.setFigureDimensions( w=5, h=4 )
-    abby.setLimits( xlim=(0,500), ylim=(0,400) )
+    abby.setFigureDimensions( w=4.75, h=4.40 )
+    abby.setLimits( xlim=(-10,425), ylim=(-20,375) )
 
+    # Axis edits and draw.
     fig.tight_layout()
     axs.axes.xaxis.set_ticklabels( [] )
     axs.axes.yaxis.set_ticklabels( [] )
@@ -80,6 +87,9 @@ if __name__ == "__main__":
     ans = input( "Press ENTER to start simulation..." )
     while ans != 'n':
         xa = flist[0].solve( glist[0]*t )
+        if sim_glasses and t > 250:
+            xg = flist[1].solve( glist[1]*(t - 250) )
+            glss.update( xg, pause=0 )
         xm = flist[2].solve( glist[2]*t )
         xh = flist[3].solve( glist[3]*t )
 
