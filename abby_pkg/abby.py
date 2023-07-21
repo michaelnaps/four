@@ -17,8 +17,8 @@ import matplotlib.pyplot as plt
 from MPC.Vehicle2D import *
 from FOUR.Transforms import *
 
+datafile = 'sketchdata.csv'
 plt.style.use( 'dark_background' )
-datafile = 'abbydrawing04.csv'
 
 if __name__ == "__main__":
     # Import data set and create X/Y lists.
@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
     # Initial conditions.
     sim_glasses = 0
-    glist = [ 3.5, 0.75, 2.0, 3.0 ]
+    glist = 1.0*np.array( [3.5, 0.75, 2.0, 3.0] )
     t = np.array( [[0]] )
     xa = flist[0].solve( t )
     if sim_glasses:
