@@ -50,8 +50,8 @@ if __name__ == "__main__":
         fvar.ls( N=75 )
 
     # Initial conditions.
-    sim_glasses = 0
-    glist = 1.0*np.array( [3.5, 0.75, 2.0, 3.0] )
+    sim_glasses = 1
+    glist = 1.5*np.array( [3.5, 0.75, 2.0, 3.0] )
     t = np.array( [[0]] )
     xa = flist[0].solve( t )
     if sim_glasses:
