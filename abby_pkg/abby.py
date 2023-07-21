@@ -8,14 +8,14 @@
 import sys
 from os.path import expanduser
 sys.path.insert( 0, expanduser('~')+'/prog/four' )
-sys.path.insert( 0, expanduser('~')+'/prog/mpc' )
+sys.path.insert( 0, expanduser('~')+'/prog/geom' )
 
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-from MPC.Vehicle2D import *
 from FOUR.Transforms import *
+from GEOM.Vehicle2D import *
 
 datafile = 'sketchdata.csv'
 plt.style.use( 'dark_background' )

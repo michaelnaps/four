@@ -1,14 +1,14 @@
 # pyinstaller --onefile mult.py
 import sys
 from os.path import expanduser
-sys.path.insert( 0, expanduser('~')+'/prog/mpc' )
+sys.path.insert( 0, expanduser('~')+'/prog/geom' )
 
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
 from FOUR.Transforms import *
-from MPC.Vehicle2D import *
+from GEOM.Vehicle2D import *
 
 datafile = 'data/xytest01.csv'
 
