@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from FOUR.Transforms import *
+from GEOM.Vectors import *
 from GEOM.Vehicle2D import *
 
 datafile = 'data/xytest01.csv'
@@ -26,7 +27,7 @@ if __name__ == "__main__":
 
     # Initialize Transform variables.
     fvar = RealFourier( T, XY )
-    fvar.dft()
+    fvar.ls( N=15 )
 
     # # Compute comparison vectors.
     # dt = 0.01
@@ -46,11 +47,18 @@ if __name__ == "__main__":
     dt = 0.1
     t = np.array( [[0]] )
     x = fvar.solve( t )
+
     vhc = Vehicle2D( x, fig=fig, axs=axs,
         radius=10, tail_length=3000 )
+    vvar = Vectors( fvar.vectors( t ), fig=fig, axs=axs )
     vhc.setLimits( xlim=(-50, 700), ylim=(-50, 500) )
+
+    vvar.draw()
     vhc.draw()
     while t < 500:
         t = t + dt
         x = fvar.solve( t )
+
+        vvar.setVertices( fvar.vectors( t ) )
+        vvar.update()
         vhc.update( x )

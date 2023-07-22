@@ -132,6 +132,18 @@ class RealFourier( Transform ):
             Y[i,:] = self.A[i,:]@tSin + self.B[i,:]@tCos
         return Y
 
+    def vectors(self, t):
+        # Expand sin/cos functions around point.
+        tSin, tCos = self.serialize( t )
+
+        V = np.empty( (self.Nx, self.N+1) )
+        for i in range( self.Nx ):
+            for j in range( self.N+1 ):
+                V[i,j] = self.A[i,j]*tSin[j] + self.B[i,j]*tCos[j]
+                # V[i,j] = sum( V[i,:j+1] )
+
+        return V
+
 
 # Class: ComplexFourier()
 class ComplexFourier( Transform ):
