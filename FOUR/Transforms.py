@@ -44,8 +44,10 @@ class Transform:
 class RealFourier( Transform ):
     def __init__(self, T, X, N=None, dt=None):
         # Intialize coefficient matrices to None.
-        self.A = None
-        self.B = None
+        self.A = None   # sin(t) coefficients
+        self.B = None   # cos(t) coefficients
+        self.R = None   # Amplitude values
+        self.P = None   # Period values
         self.Nx = X.shape[0]
 
         # Initialize Transform() as parent class.
@@ -71,6 +73,10 @@ class RealFourier( Transform ):
         # Return the serialized sets.
         return tSin, tCos
 
+    def frequency(self):
+        # Return instance of self.
+        return self
+
     def dft(self):
         # Serialize the given data set.
         tSin, tCos = self.serialize()
@@ -92,6 +98,9 @@ class RealFourier( Transform ):
             # Solve for when k = N.
             self.A[i,self.N] = 0
             self.B[i,self.N] = 1/(2*self.N)*sum( self.X[i,:]*tCos[self.N,:] )
+
+        # Update amplitude and frequency values from coefficients.
+        self.calcPeriodMembers()
 
         # Return instance of self.
         return self
@@ -136,12 +145,16 @@ class RealFourier( Transform ):
         # Expand sin/cos functions around point.
         tSin, tCos = self.serialize( t )
 
-        V = np.empty( (self.Nx, self.N+1) )
+        # Initialize vector matrices.
+        Va = np.zeros( (self.Nx, self.N+1) )
+        Vb = np.zeros( (self.Nx, self.N+1) )
         for i in range( self.Nx ):
             for j in range( self.N+1 ):
-                V[i,j] = self.A[i,j]*tSin[j] + self.B[i,j]*tCos[j]
+                Va[i,j] = Va[i,j-1] + self.A[i,j]*tSin[j]
+                Vb[i,j] = Vb[i,j-1] + self.B[i,j]*tCos[j]
                 # V[i,j] = sum( V[i,:j+1] )
 
+        V = np.hstack( (Vb, Va+sum( Vb.T )[:,None]) )
         return V
 
 
