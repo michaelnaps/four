@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     # Initialize Transform variables.
     fvar = RealFourier( T, XY )
-    fvar.ls( N=15 )
+    fvar.dft()
 
     # Plot results.
     fig, axs = plt.subplots()
@@ -40,15 +40,15 @@ if __name__ == "__main__":
 
     vhc = Vehicle2D( x, fig=fig, axs=axs,
         radius=10, tail_length=1000 )
-    vvar = Vectors( fvar.vectors( t ), fig=fig, axs=axs )
+    # vvar = Vectors( fvar.vectors( t ), fig=fig, axs=axs )
     vhc.setLimits( xlim=(-50, 700), ylim=(-50, 500) )
 
-    vvar.draw()
+    # vvar.draw()
     vhc.draw()
     while t < 500:
         t = t + dt
         x = fvar.solve( t )
 
-        vvar.setVertices( fvar.vectors( t ) )
-        vvar.update()
+        # vvar.setVertices( fvar.vectors( t ) )
+        # vvar.update()
         vhc.update( x )

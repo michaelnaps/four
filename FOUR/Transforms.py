@@ -99,9 +99,6 @@ class RealFourier( Transform ):
             self.A[i,self.N] = 0
             self.B[i,self.N] = 1/(2*self.N)*sum( self.X[i,:]*tCos[self.N,:] )
 
-        # Update amplitude and frequency values from coefficients.
-        self.calcPeriodMembers()
-
         # Return instance of self.
         return self
 
