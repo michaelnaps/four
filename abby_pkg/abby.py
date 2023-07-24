@@ -65,14 +65,14 @@ if __name__ == "__main__":
 
     # Vehicle variables.
     abby = Vehicle2D( xa, fig=fig, axs=axs, zorder=200,
-        vhc_color='plum', tail_length=round( Nlist[0]/glist[0] )-5 )
+        color='plum', tail_length=round( Nlist[0]/glist[0] )-5 )
     if sim_glasses:
         glss = Vehicle2D( xg, fig=fig, axs=axs, zorder=150,
-        vhc_color='yellowgreen', tail_length=round( Nlist[1]/glist[1] )-5 )
+        color='yellowgreen', tail_length=round( Nlist[1]/glist[1] )-5 )
     mike = Vehicle2D( xm, fig=fig, axs=axs, zorder=50,
-        vhc_color='cornflowerblue', tail_length=round( Nlist[2]/glist[2] )-5 )
+        color='cornflowerblue', tail_length=round( Nlist[2]/glist[2] )-5 )
     hat1 = Vehicle2D( xh, fig=fig, axs=axs, zorder=100,
-        vhc_color='sandybrown', tail_length=round( Nlist[3]/glist[3] )-5 )
+        color='sandybrown', tail_length=round( Nlist[3]/glist[3] )-5 )
     abby.setFigureDimensions( w=4.75, h=4.40 )
     abby.setLimits( xlim=(-10,425), ylim=(-20,375) )
 
