@@ -128,12 +128,16 @@ class RealFourier( Transform ):
         # Initialize vector matrices.
         V = np.zeros( (self.Nx, 2, 2*(self.N+1)) )
         for i in range( self.Nx ):
-            Vx = np.hstack( (self.A[i,:]*tSin.T, self.B[i,:]*tCos.T) )
-            Vy = np.hstack( (self.A[i,:]*tCos.T, self.B[i,:]*tSin.T) )
+            # Calculate x and y components of vectors.
+            Vx = np.hstack( (self.B[i,:]*tCos.T, self.A[i,:]*tSin.T) )
+            Vy = np.hstack( (self.B[i,:]*tSin.T, self.A[i,:]*tCos.T) )
             V[i,:,:] = np.vstack( (Vx, Vy) )
+
+            # Sum vectors together for plotting.
             for j in range( 1, 2*(self.N+1) ):
                 V[i,:,j] = V[i,:,j] + V[i,:,j-1]
 
+        # Return vector list.
         return V
 
     def solve(self, T=None):

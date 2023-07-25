@@ -15,6 +15,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from FOUR.Transforms import *
+from GEOM.Vectors import *
 from GEOM.Vehicle2D import *
 
 datafile = 'sketchdata.csv'
@@ -73,15 +74,34 @@ if __name__ == "__main__":
         color='cornflowerblue', tail_length=round( Nlist[2]/glist[2] )-5 )
     hat1 = Vehicle2D( xh, fig=fig, axs=axs, zorder=100,
         color='sandybrown', tail_length=round( Nlist[3]/glist[3] )-5 )
-    abby.setFigureDimensions( w=4.75, h=4.40 )
-    abby.setLimits( xlim=(-10,425), ylim=(-20,375) )
+    # abby.setFigureDimensions( w=4.75, h=4.40 )
+    abby.setLimits( xlim=(-100,500), ylim=(-100,400) )
+
+    # Creating vector entities.
+    avectors = flist[0].vectors( t )
+    vabby = [
+        Vectors( avectors[0], fig=fig, axs=axs, color='plum' ),
+        Vectors( np.flipud( avectors[1] ), fig=fig, axs=axs, color='plum' )
+    ]
+    cabby = [
+        Vectors( np.hstack( (avectors[0,:,-1,None] , xa) ), fig=fig, axs=axs, color='grey' ),
+        Vectors( np.hstack( (np.flipud( avectors[1,:,-1,None] ) , xa) ), fig=fig, axs=axs, color='grey' )
+    ]
 
     # Axis edits and draw.
     fig.tight_layout()
-    axs.axes.xaxis.set_ticklabels( [] )
-    axs.axes.yaxis.set_ticklabels( [] )
+    # axs.axes.xaxis.set_ticklabels( [] )
+    # axs.axes.yaxis.set_ticklabels( [] )
     axs.grid( 0 )
+
     abby.draw()
+    if sim_glasses:
+        glss.draw()
+    mike.draw()
+    hat1.draw()
+    for v, c in ( vabby, cabby ):
+        v.draw( new=0 )
+        c.draw( new=0 )
 
     # Simulate.
     dt = 1;  t = t + dt
@@ -93,6 +113,15 @@ if __name__ == "__main__":
             glss.update( xg, pause=0 )
         xm = flist[2].solve( glist[2]*t )
         xh = flist[3].solve( glist[3]*t )
+
+        avectors = flist[0].vectors( glist[0]*t )
+        for i, v, c, vList in zip( [0,1], vabby, cabby, avectors ):
+            if i == 1:
+                vList = np.flipud( vList )
+            v.setVertices( vList )
+            c.setVertices( np.hstack( (vList[:,-1,None], xa) ) )
+            v.update()
+            c.update()
 
         abby.update( xa, pause=0 )
         mike.update( xm, pause=0 )
