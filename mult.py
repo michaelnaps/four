@@ -27,28 +27,49 @@ if __name__ == "__main__":
 
     # Initialize Transform variables.
     fvar = RealFourier( T, XY )
-    fvar.dft()
+    fvar.ls( N=25 )
 
     # Plot results.
     fig, axs = plt.subplots()
     axs.plot( X.T, Y.T, label='Drawing' )
 
     # Initialize vehicle.
-    dt = 0.1
+    dt = 0.25
     t = np.array( [[0]] )
     x = fvar.solve( t )
 
     vhc = Vehicle2D( x, fig=fig, axs=axs,
         radius=10, tail_length=1000 )
-    # vvar = Vectors( fvar.vectors( t ), fig=fig, axs=axs )
-    vhc.setLimits( xlim=(-50, 700), ylim=(-50, 500) )
 
-    # vvar.draw()
+    vxList, vyList = fvar.vectors( t )
+    xconnector = np.hstack( (vxList[:,-1,None], x) )
+    yconnector = np.hstack( (np.flipud( vyList[:,-1,None] ), x) )
+    vxvar = Vectors( vxList, fig=fig, axs=axs )
+    vyvar = Vectors( np.flipud( vyList ), fig=fig, axs=axs )
+    cxvar = Vectors( xconnector, fig=fig, axs=axs, color='grey' )
+    cyvar = Vectors( yconnector, fig=fig, axs=axs, color='grey' )
+
+    vxvar.draw()
+    vyvar.draw( new=0 )
+    cxvar.draw( new=0 )
+    cyvar.draw( new=0 )
     vhc.draw()
     while t < 500:
         t = t + dt
         x = fvar.solve( t )
 
-        # vvar.setVertices( fvar.vectors( t ) )
-        # vvar.update()
+        vxList, vyList = fvar.vectors( t )
+        xconnector = np.hstack( (vxList[:,-1,None], x) )
+        yconnector = np.hstack( (np.flipud( vyList[:,-1,None] ), x) )
+
+        vxvar.setVertices( vxList )
+        vyvar.setVertices( np.flipud( vyList ) )
+        cxvar.setVertices( xconnector )
+        cyvar.setVertices( yconnector )
+
+        vxvar.update()
+        vyvar.update()
+        cxvar.update()
+        cyvar.update()
         vhc.update( x )
+    input( "Press ENTER to end program..." )

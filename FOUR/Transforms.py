@@ -121,6 +121,21 @@ class RealFourier( Transform ):
         # Return instance of self.
         return self
 
+    def vectors(self, t):
+        # Expand sin/cos functions around point.
+        tSin, tCos = self.serialize( t )
+
+        # Initialize vector matrices.
+        V = np.zeros( (self.Nx, 2, 2*(self.N+1)) )
+        for i in range( self.Nx ):
+            Vx = np.hstack( (self.A[i,:]*tSin.T, self.B[i,:]*tCos.T) )
+            Vy = np.hstack( (self.A[i,:]*tCos.T, self.B[i,:]*tSin.T) )
+            V[i,:,:] = np.vstack( (Vx, Vy) )
+            for j in range( 1, 2*(self.N+1) ):
+                V[i,:,j] = V[i,:,j] + V[i,:,j-1]
+
+        return V
+
     def solve(self, T=None):
         # Is given set is none, use default.
         if T is None:
@@ -137,22 +152,6 @@ class RealFourier( Transform ):
         for i in range( self.Nx ):
             Y[i,:] = self.A[i,:]@tSin + self.B[i,:]@tCos
         return Y
-
-    def vectors(self, t):
-        # Expand sin/cos functions around point.
-        tSin, tCos = self.serialize( t )
-
-        # Initialize vector matrices.
-        Va = np.zeros( (self.Nx, self.N+1) )
-        Vb = np.zeros( (self.Nx, self.N+1) )
-        for i in range( self.Nx ):
-            for j in range( self.N+1 ):
-                Va[i,j] = Va[i,j-1] + self.A[i,j]*tSin[j]
-                Vb[i,j] = Vb[i,j-1] + self.B[i,j]*tCos[j]
-                # V[i,j] = sum( V[i,:j+1] )
-
-        V = np.hstack( (Vb, Va+sum( Vb.T )[:,None]) )
-        return V
 
 
 # Class: ComplexFourier()
