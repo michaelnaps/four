@@ -75,7 +75,7 @@ if __name__ == "__main__":
     hat1 = Vehicle2D( xh, fig=fig, axs=axs, zorder=100,
         color='sandybrown', tail_length=round( Nlist[3]/glist[3] )-5 )
     # abby.setFigureDimensions( w=4.75, h=4.40 )
-    abby.setLimits( xlim=(-100,500), ylim=(-100,400) )
+    abby.setLimits( xlim=(-50,800), ylim=(-300,400) )
 
     # Creating vector entities.
     avectors = flist[0].vectors( t )
@@ -116,8 +116,11 @@ if __name__ == "__main__":
 
         avectors = flist[0].vectors( glist[0]*t )
         for i, v, c, vList in zip( [0,1], vabby, cabby, avectors ):
+            if i == 0:
+                vList[1] = vList[1] - 150
             if i == 1:
                 vList = np.flipud( vList )
+                vList[0] = vList[0] + 600
             v.setVertices( vList )
             c.setVertices( np.hstack( (vList[:,-1,None], xa) ) )
             v.update()
