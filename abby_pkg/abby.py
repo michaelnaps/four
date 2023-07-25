@@ -44,49 +44,43 @@ if __name__ == "__main__":
     Tlist = [ np.array( [[i for i in range( N )]] ) for N in Nlist ]
 
     # Fourier series lists.
-    flist = [ RealFourier( T, X ) for X, T in zip( Xlist, Tlist ) ]
-    for fvar in flist:
+    fList = [ RealFourier( T, X ) for X, T in zip( Xlist, Tlist ) ]
+    for fvar in fList:
         # print( fvar.N )
         # fvar.dft()
         fvar.ls( N=75 )
 
-    # Initial conditions.
-    sim_glasses = 1
-    glist = 1.5*np.array( [3.5, 0.75, 2.0, 3.0] )
+    # Initial conditions and plotting parameters.
     t = np.array( [[0]] )
-    xa = flist[0].solve( t )
-    if sim_glasses:
-        xg = flist[1].solve( t )
-    xm = flist[2].solve( t )
-    xh = flist[3].solve( t )
+    gList = 1.5*np.array( [3.5, 0.75, 2.0, 3.0] )
+    xList = [ f.solve( t ) for f in fList ]
+    zorderList = [ 200, 150, 50, 100 ]
+    colorList = [ 'plum', 'yellowgreen', 'cornflowerblue', 'sandybrown' ]
+    tailList = [ round( N/g ) - 5 for N, g in zip( Nlist, gList ) ]
 
     # Initialize plots.
     fig, axs = plt.subplots()
     axs.set_title( 'Abby and Michael' )
+    plt.show( block=0 )
 
     # Vehicle variables.
-    abby = Vehicle2D( xa, fig=fig, axs=axs, zorder=200,
-        color='plum', tail_length=round( Nlist[0]/glist[0] )-5 )
-    if sim_glasses:
-        glss = Vehicle2D( xg, fig=fig, axs=axs, zorder=150,
-        color='yellowgreen', tail_length=round( Nlist[1]/glist[1] )-5 )
-    mike = Vehicle2D( xm, fig=fig, axs=axs, zorder=50,
-        color='cornflowerblue', tail_length=round( Nlist[2]/glist[2] )-5 )
-    hat1 = Vehicle2D( xh, fig=fig, axs=axs, zorder=100,
-        color='sandybrown', tail_length=round( Nlist[3]/glist[3] )-5 )
-    # abby.setFigureDimensions( w=4.75, h=4.40 )
-    abby.setLimits( xlim=(-50,800), ylim=(-300,400) )
+    sim_glasses = 1
+    vhcList = [ Vehicle2D( x, fig=fig, axs=axs,
+        zorder=z, color=c, tail_length=l )
+        for x, z, c, l in zip( xList, zorderList, colorList, tailList ) ]
+    vhcList[0].setLimits( xlim=(-50,800), ylim=(-300,400) )
 
     # Creating vector entities.
-    avectors = flist[0].vectors( t )
-    vabby = [
-        Vectors( avectors[0], fig=fig, axs=axs, color='plum' ),
-        Vectors( np.flipud( avectors[1] ), fig=fig, axs=axs, color='plum' )
-    ]
-    cabby = [
-        Vectors( np.hstack( (avectors[0,:,-1,None] , xa) ), fig=fig, axs=axs, color='grey' ),
-        Vectors( np.hstack( (np.flipud( avectors[1,:,-1,None] ) , xa) ), fig=fig, axs=axs, color='grey' )
-    ]
+    offsetList = [ [600, 0, 0, 0], [-150, 0, 0, 0] ]
+    vecList = [ f.vectors( t ) for f in fList ]
+    vxList = [ Vectors( v[0], fig=fig, axs=axs, color=c )
+        for v, c in zip( vecList, colorList ) ]
+    vyList = [ Vectors( np.flipud( v[1] ), fig=fig, axs=axs, color=c )
+        for v, c in zip( vecList, colorList ) ]
+    # cabby = [
+    #     Vectors( np.hstack( (avectors[0,:,-1,None] , xa) ), fig=fig, axs=axs, color='grey' ),
+    #     Vectors( np.hstack( (np.flipud( avectors[1,:,-1,None] ) , xa) ), fig=fig, axs=axs, color='grey' )
+    # ]
 
     # Axis edits and draw.
     fig.tight_layout()
@@ -94,27 +88,24 @@ if __name__ == "__main__":
     # axs.axes.yaxis.set_ticklabels( [] )
     axs.grid( 0 )
 
-    abby.draw()
-    if sim_glasses:
-        glss.draw()
-    mike.draw()
-    hat1.draw()
-    for v, c in ( vabby, cabby ):
-        v.draw( new=0 )
-        c.draw( new=0 )
+    for vhc, vx, vy in zip( vhcList, vxList, vyList ):
+        vhc.draw()
+        vx.draw( new=0 )
+        vy.draw( new=0 )
 
     # Simulate.
+    iList = [ 0, 1, 2, 3 ]
     dt = 1;  t = t + dt
     ans = input( "Press ENTER to start simulation..." )
     while t < 2500 and ans != 'n':
-        xa = flist[0].solve( glist[0]*t )
-        if sim_glasses and t > 250:
-            xg = flist[1].solve( glist[1]*(t - 250) )
-            glss.update( xg, pause=0 )
-        xm = flist[2].solve( glist[2]*t )
-        xh = flist[3].solve( glist[3]*t )
+        for i, f, g in zip( iList, fList, gList ):
+            xList[i] = f.solve( g*t )
+            vecList[i] = f.vectors( g*t )
+            vxList[i].setVertices( vecList[i][0] )
+            vyList[i].setVertices( np.flipud( vecList[i][1] ) )
 
-        avectors = flist[0].vectors( glist[0]*t )
+
+        avectors = fList[0].vectors( gList[0]*t )
         for i, v, c, vList in zip( [0,1], vabby, cabby, avectors ):
             if i == 0:
                 vList[1] = vList[1] - 150
