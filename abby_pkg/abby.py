@@ -64,19 +64,18 @@ if __name__ == "__main__":
     plt.show( block=0 )
 
     # Vehicle variables.
-    sim_glasses = 1
     vhcList = [ Vehicle2D( x, fig=fig, axs=axs,
         zorder=z, color=c, tail_length=l )
         for x, z, c, l in zip( xList, zorderList, colorList, tailList ) ]
-    vhcList[0].setLimits( xlim=(-50,800), ylim=(-300,400) )
+    vhcList[0].setLimits( xlim=(-350,750), ylim=(-250,600) )
 
     # Creating vector entities.
-    offsetList = [ [600, 0, 0, 0], [-150, 0, 0, 0] ]
+    offsetList = [ [600, 600, -200, -200], [-150, -150, -150, 500] ]
     vecList = [ f.vectors( t ) for f in fList ]
-    vxList = [ Vectors( v[0], fig=fig, axs=axs, color=c )
-        for v, c in zip( vecList, colorList ) ]
-    vyList = [ Vectors( np.flipud( v[1] ), fig=fig, axs=axs, color=c )
-        for v, c in zip( vecList, colorList ) ]
+    vxList = [ Vectors( v[0]+[[0],[oy]], fig=fig, axs=axs, color=c )
+        for v, c, oy in zip( vecList, colorList, offsetList[0] ) ]
+    vyList = [ Vectors( np.flipud( v[1] )+[[ox],[0]], fig=fig, axs=axs, color=c )
+        for v, c, ox in zip( vecList, colorList, offsetList[1] ) ]
     # cabby = [
     #     Vectors( np.hstack( (avectors[0,:,-1,None] , xa) ), fig=fig, axs=axs, color='grey' ),
     #     Vectors( np.hstack( (np.flipud( avectors[1,:,-1,None] ) , xa) ), fig=fig, axs=axs, color='grey' )
@@ -84,43 +83,32 @@ if __name__ == "__main__":
 
     # Axis edits and draw.
     fig.tight_layout()
-    # axs.axes.xaxis.set_ticklabels( [] )
-    # axs.axes.yaxis.set_ticklabels( [] )
+    axs.axes.xaxis.set_ticklabels( [] )
+    axs.axes.yaxis.set_ticklabels( [] )
     axs.grid( 0 )
 
     for vhc, vx, vy in zip( vhcList, vxList, vyList ):
         vhc.draw()
-        vx.draw( new=0 )
-        vy.draw( new=0 )
+        vx.draw()
+        vy.draw()
 
     # Simulate.
     iList = [ 0, 1, 2, 3 ]
     dt = 1;  t = t + dt
     ans = input( "Press ENTER to start simulation..." )
     while t < 2500 and ans != 'n':
-        for i, f, g in zip( iList, fList, gList ):
+        for i, f, g, ox, oy in zip( iList, fList, gList, offsetList[0], offsetList[1] ):
             xList[i] = f.solve( g*t )
             vecList[i] = f.vectors( g*t )
             vxList[i].setVertices( vecList[i][0] )
+            vxList[i].transform( dx=[[0],[oy]] )
             vyList[i].setVertices( np.flipud( vecList[i][1] ) )
-
-
-        avectors = fList[0].vectors( gList[0]*t )
-        for i, v, c, vList in zip( [0,1], vabby, cabby, avectors ):
-            if i == 0:
-                vList[1] = vList[1] - 150
-            if i == 1:
-                vList = np.flipud( vList )
-                vList[0] = vList[0] + 600
-            v.setVertices( vList )
-            c.setVertices( np.hstack( (vList[:,-1,None], xa) ) )
-            v.update()
-            c.update()
-
-        abby.update( xa, pause=0 )
-        mike.update( xm, pause=0 )
-        hat1.update( xh )
-
+            vyList[i].transform( dx=[[ox],[0]] )
+        for x, vhc, vx, vy in zip( xList, vhcList, vxList, vyList ):
+            vhc.update( x, pause=0 )
+            vx.update()
+            vy.update()
+        plt.pause( 1e-3 )
         t = t + dt
     if ans != 'n':
         input( "Press ENTER to end program..." )
