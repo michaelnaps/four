@@ -48,7 +48,7 @@ if __name__ == "__main__":
     for fvar in fList:
         # print( fvar.N )
         # fvar.dft()
-        fvar.ls( N=75 )
+        fvar.ls( N=50 )
 
     # Initial conditions and plotting parameters.
     t = np.array( [[0]] )
@@ -76,10 +76,10 @@ if __name__ == "__main__":
         for v, c, oy in zip( vecList, colorList, offsetList[0] ) ]
     vyList = [ Vectors( np.flipud( v[1] )+[[ox],[0]], fig=fig, axs=axs, color=c )
         for v, c, ox in zip( vecList, colorList, offsetList[1] ) ]
-    # cabby = [
-    #     Vectors( np.hstack( (avectors[0,:,-1,None] , xa) ), fig=fig, axs=axs, color='grey' ),
-    #     Vectors( np.hstack( (np.flipud( avectors[1,:,-1,None] ) , xa) ), fig=fig, axs=axs, color='grey' )
-    # ]
+    dxList = [ Vectors( np.hstack( (v[0,:,-1,None]+[[0],[oy]], x) ), fig=fig, axs=axs, color='grey' )
+        for v, x, oy in zip( vecList, xList, offsetList[1] ) ]
+    dyList = [ Vectors( np.hstack( (np.flipud( v[1,:,-1,None] )+[[ox],[0]], x) ), fig=fig, axs=axs, color='grey' )
+        for v, x, ox in zip( vecList, xList, offsetList[0] ) ]
 
     # Axis edits and draw.
     fig.tight_layout()
@@ -87,10 +87,11 @@ if __name__ == "__main__":
     axs.axes.yaxis.set_ticklabels( [] )
     axs.grid( 0 )
 
-    for vhc, vx, vy in zip( vhcList, vxList, vyList ):
-        vhc.draw()
+    for vx, vy, dx, dy in zip( vxList, vyList, dxList, dyList ):
         vx.draw()
         vy.draw()
+        dx.draw()
+        dy.draw()
 
     # Simulate.
     iList = [ 0, 1, 2, 3 ]
@@ -104,10 +105,14 @@ if __name__ == "__main__":
             vxList[i].transform( dx=[[0],[oy]] )
             vyList[i].setVertices( np.flipud( vecList[i][1] ) )
             vyList[i].transform( dx=[[ox],[0]] )
-        for x, vhc, vx, vy in zip( xList, vhcList, vxList, vyList ):
+            dxList[i].setVertices( np.hstack( (vecList[i][0,:,-1,None]+[[0],[oy]], xList[i]) ) )
+            dyList[i].setVertices( np.hstack( (np.flipud( vecList[i][1,:,-1,None] )+[[ox],[0]], xList[i]) ) )
+        for x, vhc, vx, vy, dx, dy in zip( xList, vhcList, vxList, vyList, dxList, dyList ):
             vhc.update( x, pause=0 )
             vx.update()
             vy.update()
+            dx.update()
+            dy.update()
         plt.pause( 1e-3 )
         t = t + dt
     if ans != 'n':
