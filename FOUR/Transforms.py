@@ -126,11 +126,16 @@ class RealFourier( Transform ):
         tSin, tCos = self.serialize( t )
 
         # Initialize vector matrices.
+        Vx = np.empty( (1, 2*(self.N+1)) )
+        Vy = np.empty( (1, 2*(self.N+1)) )
         V = np.zeros( (self.Nx, 2, 2*(self.N+1)) )
         for i in range( self.Nx ):
             # Calculate x and y components of vectors.
-            Vx = np.hstack( (self.B[i,:]*tCos.T, self.A[i,:]*tSin.T) )
-            Vy = np.hstack( (self.B[i,:]*tSin.T, self.A[i,:]*tCos.T) )
+            k = 0
+            for j in range( self.N+1 ):
+                Vx[0,k:k+2] = np.array( [ self.B[i,j]*tCos.T[0,j], self.A[i,j]*tSin.T[0,j] ] )
+                Vy[0,k:k+2] = np.array( [ self.B[i,j]*tSin.T[0,j], self.A[i,j]*tCos.T[0,j] ] )
+                k += 2
             V[i,:,:] = np.vstack( (Vx, Vy) )
 
             # Sum vectors together for plotting.
