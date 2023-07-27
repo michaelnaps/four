@@ -74,9 +74,9 @@ if __name__ == "__main__":
         for v, c, oy in zip( vecList, colorList, offsetList[0] ) ]
     vyList = [ Vectors( np.flipud( v[1] )+[[ox],[0]], fig=fig, axs=axs, color=c )
         for v, c, ox in zip( vecList, colorList, offsetList[1] ) ]
-    dxList = [ Vectors( np.hstack( (v[0,:,-1,None]+[[0],[oy]], x) ), fig=fig, axs=axs, color='grey' )
+    dxList = [ Vectors( np.hstack( (v[0][:,-1,None]+[[0],[oy]], x) ), fig=fig, axs=axs, color='grey' )
         for v, x, oy in zip( vecList, xList, offsetList[1] ) ]
-    dyList = [ Vectors( np.hstack( (np.flipud( v[1,:,-1,None] )+[[ox],[0]], x) ), fig=fig, axs=axs, color='grey' )
+    dyList = [ Vectors( np.hstack( (np.flipud( v[1][:,-1,None] )+[[ox],[0]], x) ), fig=fig, axs=axs, color='grey' )
         for v, x, ox in zip( vecList, xList, offsetList[0] ) ]
 
     # Axis edits and draw.
