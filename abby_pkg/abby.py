@@ -88,6 +88,8 @@ if __name__ == "__main__":
     for vx, vy, dx, dy in zip( vxList, vyList, dxList, dyList ):
         vx.draw()
         vy.draw()
+        dx.setLineStyle( ':' );  dx.setLineWidth( 1.25 )
+        dy.setLineStyle( ':' );  dy.setLineWidth( 1.25 )
         dx.draw()
         dy.draw()
 
