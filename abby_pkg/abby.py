@@ -65,10 +65,9 @@ if __name__ == "__main__":
     vhcList = [ Vehicle2D( x, fig=fig, axs=axs,
         zorder=z, color=c, tail_length=l )
         for x, z, c, l in zip( xList, zorderList, colorList, tailList ) ]
-    vhcList[0].setLimits( xlim=(-350,750), ylim=(-250,600) )
 
     # Creating vector entities.
-    offsetList = [ [600, 600, -200, -200], [-150, -150, -150, 500] ]
+    offsetList = [ [600, 600, -175, -175], [-150, -150, -150, 500] ]
     vecList = [ f.vectors( t ) for f in fList ]
     vxList = [ Vectors( v[0]+[[0],[oy]], fig=fig, axs=axs, color=c )
         for v, c, oy in zip( vecList, colorList, offsetList[0] ) ]
@@ -79,12 +78,6 @@ if __name__ == "__main__":
     dyList = [ Vectors( np.hstack( (np.flipud( v[1][:,-1,None] )+[[ox],[0]], x) ), fig=fig, axs=axs, color='grey' )
         for v, x, ox in zip( vecList, xList, offsetList[0] ) ]
 
-    # Axis edits and draw.
-    fig.tight_layout()
-    axs.axes.xaxis.set_ticklabels( [] )
-    axs.axes.yaxis.set_ticklabels( [] )
-    axs.grid( 0 )
-
     for vx, vy, dx, dy in zip( vxList, vyList, dxList, dyList ):
         vx.draw()
         vy.draw()
@@ -92,6 +85,12 @@ if __name__ == "__main__":
         dy.setLineStyle( ':' );  dy.setLineWidth( 1.25 )
         dx.draw()
         dy.draw()
+
+    # Axis edits and draw.
+    # axs.axes.xaxis.set_ticklabels( [] )
+    # axs.axes.yaxis.set_ticklabels( [] )
+    axs.axis( 'equal' )
+    axs.grid( 0 )
 
     # Simulate.
     iList = [ 0, 1, 2, 3 ]
