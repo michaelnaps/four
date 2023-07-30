@@ -17,6 +17,8 @@ ___
 
 ### Abby and Michael Simulated Trace
 
-<video width="320" height="240" controls>
-  <source src="abby_pkg/recording.mp4" type="video/mp4">
-</video>
+<p align="center">
+    <img src=abby_pkg/recording.gif height=325 />
+</p>
+
+NOTE: Simulation is very smooth when not formatted as a *.gif* file.
