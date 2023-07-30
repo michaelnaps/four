@@ -19,7 +19,7 @@ from GEOM.Vectors import *
 from GEOM.Vehicle2D import *
 
 datafile = 'sketchdata.csv'
-plt.style.use( 'dark_background' )
+# plt.style.use( 'dark_background' )
 
 if __name__ == "__main__":
     # Import data set and create X/Y lists.
@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     # Initial conditions and plotting parameters.
     t = np.array( [[0]] )
-    gList = 1.5*np.array( [3.5, 0.75, 2.0, 3.0] )
+    gList = 2.0*np.array( [3.5, 0.75, 2.5, 3.5] )
     xList = [ f.solve( t ) for f in fList ]
     zorderList = [ 200, 150, 50, 100 ]
     colorList = [ 'plum', 'yellowgreen', 'cornflowerblue', 'sandybrown' ]
@@ -62,6 +62,7 @@ if __name__ == "__main__":
     plt.show( block=0 )
 
     # Vehicle variables.
+    sim_glasses = 1
     vhcList = [ Vehicle2D( x, fig=fig, axs=axs,
         zorder=z, color=c, tail_length=l )
         for x, z, c, l in zip( xList, zorderList, colorList, tailList ) ]
@@ -79,12 +80,13 @@ if __name__ == "__main__":
         for v, x, ox in zip( vecList, xList, offsetList[0] ) ]
 
     for vx, vy, dx, dy in zip( vxList, vyList, dxList, dyList ):
-        vx.draw()
-        vy.draw()
-        dx.setLineStyle( ':' );  dx.setLineWidth( 1.25 )
-        dy.setLineStyle( ':' );  dy.setLineWidth( 1.25 )
-        dx.draw()
-        dy.draw()
+        if (i != 1) or (i == 1 and sim_glasses):
+            vx.draw()
+            vy.draw()
+            dx.setLineStyle( ':' );  dx.setLineWidth( 1.25 )
+            dy.setLineStyle( ':' );  dy.setLineWidth( 1.25 )
+            dx.draw()
+            dy.draw()
 
     # Axis edits and draw.
     # axs.axes.xaxis.set_ticklabels( [] )
@@ -98,20 +100,22 @@ if __name__ == "__main__":
     ans = input( "Press ENTER to start simulation..." )
     while t < 2500 and ans != 'n':
         for i, f, g, ox, oy in zip( iList, fList, gList, offsetList[0], offsetList[1] ):
-            xList[i] = f.solve( g*t )
-            vecList[i] = f.vectors( g*t )
-            vxList[i].setVertices( vecList[i][0] )
-            vxList[i].transform( dx=[[0],[oy]] )
-            vyList[i].setVertices( np.flipud( vecList[i][1] ) )
-            vyList[i].transform( dx=[[ox],[0]] )
-            dxList[i].setVertices( np.hstack( (vecList[i][0,:,-1,None]+[[0],[oy]], xList[i]) ) )
-            dyList[i].setVertices( np.hstack( (np.flipud( vecList[i][1,:,-1,None] )+[[ox],[0]], xList[i]) ) )
+            if (i != 1) or (i == 1 and sim_glasses):
+                xList[i] = f.solve( g*t )
+                vecList[i] = f.vectors( g*t )
+                vxList[i].setVertices( vecList[i][0] )
+                vxList[i].transform( dx=[[0],[oy]] )
+                vyList[i].setVertices( np.flipud( vecList[i][1] ) )
+                vyList[i].transform( dx=[[ox],[0]] )
+                dxList[i].setVertices( np.hstack( (vecList[i][0,:,-1,None]+[[0],[oy]], xList[i]) ) )
+                dyList[i].setVertices( np.hstack( (np.flipud( vecList[i][1,:,-1,None] )+[[ox],[0]], xList[i]) ) )
         for x, vhc, vx, vy, dx, dy in zip( xList, vhcList, vxList, vyList, dxList, dyList ):
-            vhc.update( x, pause=0 )
-            vx.update()
-            vy.update()
-            dx.update()
-            dy.update()
+            if (i != 1) or (i == 1 and sim_glasses):
+                vhc.update( x, pause=0 )
+                vx.update()
+                vy.update()
+                dx.update()
+                dy.update()
         plt.pause( 1e-3 )
         t = t + dt
     if ans != 'n':
