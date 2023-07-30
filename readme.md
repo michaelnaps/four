@@ -1,4 +1,4 @@
-### Fourier Series and Animations
+## Fourier Series and Animations
 
 **UNDER DEVELOPMENT**
 
@@ -11,3 +11,12 @@ $$
 $$
 
 Where $x \in \mathbb{X}$ and $f(x) \in \mathbb{Y}$.
+
+
+___
+
+### Abby and Michael Simulated Trace
+
+<video width="320" height="240" controls>
+  <source src="abby_pkg/recording.mp4" type="video/mp4">
+</video>
