@@ -15,7 +15,17 @@ Where $x \in \mathbb{X}$ and $f(x) \in \mathbb{Y}$.
 
 ___
 
-### Abby and Michael Simulated Trace
+### Abby and Michael Simulated Trace (Fun with Fourier's)
+
+**Important note:** I did this purely as a side project. Animations using Fourier transforms are not particularly difficult, but the exercise proved a fun and interesting re-introduction to a topic I am quite enamored with presently. For the purposes of the simulation I chose $N=50$ in my least-squares (LS) regression. The discrete fourier transform (DFT) is also a method in this library, but was not used here as I wanted to filter out some of the hard-edges from my trace.
+
+For Abby's birthday I traced an image using the tools in the *drawdata* folder of this repository to form a reference data set, and used the *FOUR*-package to create an animation of the lines drawn. The first image shows the reference...
+
+<p align="center">
+    <img src=draw/images/abby_michael.png height=150 />
+</p>
+
+And the second shows the resulting animation (plus I gave myself sunglasses)...
 
 <p align="center">
     <img src=abby_pkg/recording.gif height=325 />
