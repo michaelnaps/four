@@ -22,13 +22,13 @@ ___
 For Abby's birthday I traced an image using the tools in the *drawdata* folder of this repository to form a reference data set, and used the *FOUR*-package to create an animation of the lines drawn. The first image shows the reference...
 
 <p align="center">
-    <img src=draw/images/abby_michael.png height=150 />
+    <img src=draw/images/abby_michael.png width=300 />
 </p>
 
 And the second shows the resulting animation (plus I gave myself sunglasses)...
 
 <p align="center">
-    <img src=abby_pkg/recording.gif height=325 />
+    <img src=abby_pkg/recording.gif width=450 />
 </p>
 
 NOTE: Simulation is very smooth when not formatted as a *.gif* file.
