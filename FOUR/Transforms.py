@@ -102,7 +102,7 @@ class RealFourier( Transform ):
         # Return instance of self.
         return self
 
-    def ls(self, N=None):
+    def dmd(self, N=None):
         # Set number of cos/sin terms.
         if N is not None:
             self.N = N
@@ -112,7 +112,7 @@ class RealFourier( Transform ):
 
         # Initialize the regressor variable and solve.
         regr = Regressor( TSinCos, self.X )
-        C, _ = regr.ls()
+        C, _ = regr.dmd()
 
         # Set coefficient vectors.
         self.A = C[:,:self.N+1]

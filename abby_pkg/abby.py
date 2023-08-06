@@ -46,7 +46,7 @@ if __name__ == "__main__":
     # Fourier series lists.
     fList = [ RealFourier( T, X ) for X, T in zip( Xlist, Tlist ) ]
     for fvar in fList:
-        fvar.ls( N=50 )
+        fvar.dmd( N=50 )
 
     # Initial conditions and plotting parameters.
     t = np.array( [[0]] )
