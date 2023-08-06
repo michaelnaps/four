@@ -79,8 +79,11 @@ if __name__ == "__main__":
     dyList = [ Vectors( np.hstack( (np.flipud( v[1][:,-1,None] )+[[ox],[0]], x) ), fig=fig, axs=axs, color='grey' )
         for v, x, ox in zip( vecList, xList, offsetList[0] ) ]
 
-    for vx, vy, dx, dy in zip( vxList, vyList, dxList, dyList ):
+    iList = [ 0, 1, 2, 3 ]
+    for i, vhc, vx, vy, dx, dy in \
+        zip( iList, vhcList, vxList, vyList, dxList, dyList ):
         if (i != 1) or (i == 1 and sim_glasses):
+            vhc.draw()
             vx.draw()
             vy.draw()
             dx.setLineStyle( ':' );  dx.setLineWidth( 1.25 )
@@ -95,7 +98,6 @@ if __name__ == "__main__":
     axs.grid( 0 )
 
     # Simulate.
-    iList = [ 0, 1, 2, 3 ]
     dt = 1;  t = t + dt
     ans = input( "Press ENTER to start simulation..." )
     while t < 2500 and ans != 'n':
@@ -111,7 +113,7 @@ if __name__ == "__main__":
                 dyList[i].setVertices( np.hstack( (np.flipud( vecList[i][1,:,-1,None] )+[[ox],[0]], xList[i]) ) )
         for x, vhc, vx, vy, dx, dy in zip( xList, vhcList, vxList, vyList, dxList, dyList ):
             if (i != 1) or (i == 1 and sim_glasses):
-                vhc.update( x, pause=0 )
+                vhc.update( x )
                 vx.update()
                 vy.update()
                 dx.update()
