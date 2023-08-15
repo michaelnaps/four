@@ -25,7 +25,7 @@ class Transform:
         if dt is None:
             self.dt = self.T[0,1] - self.T[0,0]
         else:
-            dt = dt
+            self.dt = dt
 
         self.tau = 2*self.N*self.dt
 
