@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
     for n in range( 0, Nmax+1, dN ):
         if n == 0:  n = n + 1;
-        fvar.ls( N=n )
+        fvar.dmd( N=n )
         Yf = fvar.solve( X )
         axs.plot( X.T, Yf.T, linestyle=None, label=('N=%i' % n) )
 

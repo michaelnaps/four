@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     # Initialize Transform variables.
     fvar = RealFourier( T, XY )
-    fvar.ls( N=25 )
+    fvar.dmd( N=25 )
 
     # Plot results.
     fig, axs = plt.subplots()
@@ -39,21 +39,16 @@ if __name__ == "__main__":
     x = fvar.solve( t )
 
     vhc = Vehicle2D( x, fig=fig, axs=axs,
-        radius=10, tail_length=1000 )
+        radius=10, tail_length=1000 ).draw()
 
     vxList, vyList = fvar.vectors( t )
     xconnector = np.hstack( (vxList[:,-1,None], x) )
     yconnector = np.hstack( (np.flipud( vyList[:,-1,None] ), x) )
-    vxvar = Vectors( vxList, fig=fig, axs=axs )
-    vyvar = Vectors( np.flipud( vyList ), fig=fig, axs=axs )
-    cxvar = Vectors( xconnector, fig=fig, axs=axs, color='grey' )
-    cyvar = Vectors( yconnector, fig=fig, axs=axs, color='grey' )
+    vxvar = Vectors( vxList, fig=fig, axs=axs ).draw()
+    vyvar = Vectors( np.flipud( vyList ), fig=fig, axs=axs ).draw()
+    cxvar = Vectors( xconnector, fig=fig, axs=axs, color='grey' ).draw()
+    cyvar = Vectors( yconnector, fig=fig, axs=axs, color='grey' ).draw()
 
-    vxvar.draw()
-    vyvar.draw( new=0 )
-    cxvar.draw( new=0 )
-    cyvar.draw( new=0 )
-    vhc.draw()
     while t < 500:
         t = t + dt
         x = fvar.solve( t )
@@ -72,4 +67,5 @@ if __name__ == "__main__":
         cxvar.update()
         cyvar.update()
         vhc.update( x )
+        plt.pause( 1e-3 )
     input( "Press ENTER to end program..." )
