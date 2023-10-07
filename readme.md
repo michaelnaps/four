@@ -15,9 +15,9 @@ Where $x \in \mathbb{X}$ and $f(x) \in \mathbb{Y}$.
 
 ___
 
-### Imprinting Temporal-dynamics on to a Grid
+### Imprinting Temporal-dynamics onto a Grid
 
-In this quick example I have imprinted the motion of the duffing oscillator (as begun from a single set point) on to a grid. Each space can be made *visible* of *invisible* dependent on whether the point is present in that cell. That is,
+In this quick example I have imprinted the motion of the duffing oscillator (as begun from a single set point) onto a grid. Each space can be made *visible* of *invisible* dependent on whether the point is present in that cell. That is,
 
 $$
     c_{i,j} = \begin{cases}
