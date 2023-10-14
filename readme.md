@@ -30,9 +30,7 @@ $$
     \end{cases}
 $$
 
-Where $c_{i,j}$ is the binary value for the $j$-th cell in the $i$-th row. The value of each cell was saved for every point of the simulation to be used in the calculation of the Fourier transform.
-
-Then, a Fourier transform was performed for each cell in the grid, resulting in the figure below...
+Where $c_{i,j}$ is the binary value for the $j$-th cell in the $i$-th row. The binary grid was saved at each step of the simulation and used to calculate the Fourier transform. This resulted in a playback that looks like...
 
 <p align="center">
     <img src=duffing/grid.gif width=300 />
