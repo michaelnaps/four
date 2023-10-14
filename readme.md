@@ -13,7 +13,9 @@ $$
 Where $x \in \mathbb{X}$ and $f(x) \in \mathbb{Y}$.
 
     References:
-        [1] A. Gilat and V. Subramaniam, Numerical methods for engineers and scientists: an introduction with applications using matlab, 3. ed. Hoboken, NJ: Wiley, 2014.
+        A. Gilat and V. Subramaniam, Numerical methods for engineers and
+            scientists: an introduction with applications using matlab, 3. ed.
+            Hoboken, NJ: Wiley, 2014.
 
 ___
 
