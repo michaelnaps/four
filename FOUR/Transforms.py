@@ -138,11 +138,8 @@ class RealFourier( Transform ):
 
     def solve(self, T=None):
         # Is given set is none, use default.
-        if T is None:
-            T = self.T
-            Nt = 2*self.N
-        else:
-            Nt = T.shape[1]
+        T = self.T if T is None else T
+        Nt = 2*self.N if T is None else T.shape[1]
 
         # Get serialized form of data set.
         tSin, tCos = self.serialize( T )
