@@ -46,11 +46,8 @@ class RealFourier( Transform ):
 
     def serialize(self, T=None):
         # If data set is given use instead of 'default'.
-        if T is None:
-            T = self.T
-            M = self.T.shape[1]
-        else:
-            M = T.shape[1]
+        T = self.T if T is None else T
+        M = self.T.shape[1] if T is None else T.shape[1]
 
         # Initialize serialized set matrices.
         tSin = np.zeros( (self.N+1, M) )
