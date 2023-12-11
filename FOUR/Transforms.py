@@ -16,17 +16,8 @@ class Transform:
     def __init__(self, T, X, N=None, dt=None):
         self.T = T
         self.X = X
-
-        if N is None:
-            self.N = round( T.shape[1]/2 )
-        else:
-            self.N = N
-
-        if dt is None:
-            self.dt = self.T[0,1] - self.T[0,0]
-        else:
-            self.dt = dt
-
+        self.N = round( T.shape[1]/2 ) if N is None else N
+        self.dt = self.T[0,1] - self.T[0,0] if dt is None else dt
         self.tau = 2*self.N*self.dt
 
     def setDataSets(self, T, X):
