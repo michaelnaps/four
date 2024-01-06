@@ -45,6 +45,15 @@ class RealFourier( Transform ):
         # Initialize Transform() as parent class.
         Transform.__init__( self, T, X, N=N, dt=dt )
 
+    # Default print function.
+    def __str__(self):
+        assert self.A is not None or self.B is not None, \
+            "\n ERROR: RealFourier.A, or RealFourier.B has not been set...\n"
+        line1 = 'tau: %.5e\n' % self.tau
+        line2 = 'A.shape: (' + str(self.A.shape[0]) + ', ' + str(self.A.shape[1]) + ')\n'
+        line3 = 'B.shape: (' + str(self.B.shape[0]) + ', ' + str(self.B.shape[1]) + ')\n'
+        return line1 + line2 + line3
+
     def serialize(self, T=None):
         # If data set is given use instead of 'default'.
         T = self.T if T is None else T
