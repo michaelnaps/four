@@ -17,6 +17,7 @@ class Transform:
         # Initialize transform variables and dimensions.
         self.T = T
         self.X = X
+        self.K = T.shape[0]
         self.N = round( T.shape[1]/2 ) if N is None else N
         self.dt = self.T[0,1] - self.T[0,0] if dt is None else dt
         self.tau = 2*self.N*self.dt
@@ -57,16 +58,20 @@ class RealFourier( Transform ):
     def serialize(self, T=None):
         # If data set is given use instead of 'default'.
         T = self.T if T is None else T
-        M = self.T.shape[1] if T is None else T.shape[1]
+        M = T.shape[1]
 
         # Initialize serialized set matrices.
-        tSin = np.zeros( (self.N+1, M) )
-        tCos = np.ones(  (self.N+1, M) )
+        tSin = np.zeros( (self.K*(self.N+1), M) )
+        tCos = np.ones(  (self.K*(self.N+1), M) )
 
         # Iterate through for varying frequencies.
-        for k in range( 1, self.N+1 ):
-            tSin[k,:] = np.sin( 2*np.pi*k*T[0,:]/self.tau )
-            tCos[k,:] = np.cos( 2*np.pi*k*T[0,:]/self.tau )
+        j = -1
+        for k in range( self.K*(self.N+1) ):
+            if k % (self.N + 1) == 0:
+                j = j + 1
+                continue
+            tSin[k,:] = np.sin( 2*np.pi*k*T[j,:]/self.tau )
+            tCos[k,:] = np.cos( 2*np.pi*k*T[j,:]/self.tau )
 
         # Return the serialized sets.
         return tSin, tCos
@@ -76,6 +81,10 @@ class RealFourier( Transform ):
         return self
 
     def dft(self):
+        # Check that system is SIMO.
+        assert self.K == 1, \
+            "ERROR: DFT requires that system be be SIMO or simpler."
+
         # Serialize the given data set.
         tSin, tCos = self.serialize()
 
@@ -113,13 +122,17 @@ class RealFourier( Transform ):
         C, _ = regr.dmd()
 
         # Set coefficient vectors.
-        self.A = C[:,:self.N+1]
-        self.B = C[:,self.N+1:]
+        self.A = C[:,:self.K*(self.N+1)]
+        self.B = C[:,self.K*(self.N+1):]
 
         # Return instance of self.
         return self
 
     def vectors(self, t):
+        # Check that system is SIMO.
+        assert self.K == 1, \
+            "ERROR: RealFourier.vectors requires that system be be SIMO or simpler."
+
         # Expand sin/cos functions around point.
         tSin, tCos = self.serialize( t )
 
