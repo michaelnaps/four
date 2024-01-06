@@ -21,6 +21,7 @@ class Transform:
         self.N = round( T.shape[1]/2 ) if N is None else N
         self.dt = self.T[0,1] - self.T[0,0] if dt is None else dt
         self.tau = 2*self.N*self.dt
+        self.err = None
 
     def setDataSets(self, T, X):
         self.__init__( T, X )
@@ -50,9 +51,9 @@ class RealFourier( Transform ):
     def __str__(self):
         assert self.A is not None or self.B is not None, \
             "\nERROR: RealFourier.A, or RealFourier.B has not been set...\n"
-        line1 = 'tau: %.5e\n' % self.tau
-        line2 = 'A.shape: (' + str(self.A.shape[0]) + ', ' + str(self.A.shape[1]) + ')\n'
-        line3 = 'B.shape: (' + str(self.B.shape[0]) + ', ' + str(self.B.shape[1]) + ')\n'
+        line1 = 'Error: %.5e\n' % (-1 if self.err is None else self.err)
+        line2 = '\tA.shape: (' + str(self.A.shape[0]) + ', ' + str(self.A.shape[1]) + ')\n'
+        line3 = '\tB.shape: (' + str(self.B.shape[0]) + ', ' + str(self.B.shape[1]) + ')\n'
         return line1 + line2 + line3
 
     def serialize(self, T=None):
@@ -75,10 +76,6 @@ class RealFourier( Transform ):
 
         # Return the serialized sets.
         return tSin, tCos
-
-    def frequency(self):
-        # Return instance of self.
-        return self
 
     def dft(self):
         # Check that system is single input.
@@ -126,6 +123,7 @@ class RealFourier( Transform ):
         self.B = C[:,self.K*(self.N+1):]
 
         # Return instance of self.
+        self.resError( self.T, self.X, save=1 )
         return self
 
     def vectors(self, t):
@@ -168,6 +166,25 @@ class RealFourier( Transform ):
         Y = self.A@tSin + self.B@tCos
         return Y
 
+    def resError(self, T=None, X=None, save=0):
+        # Quit if coefficients are not set.
+        assert self.A is not None or self.B is not None, \
+            "\nERROR: RealFourier.A, or RealFourier.B has not been set...\n"
+
+        # Initialize data matrix (default: training data).
+        T = self.T if T is None else T
+        X = self.X if X is None else X
+
+        # Solve for approximation of set.
+        Y = self.solve( T )
+
+        # Calculate residual error.
+        err = np.linalg.norm( X - Y )**2
+
+        # Save if requested and return.
+        if save:
+            self.err = err
+        return err
 
 # Class: ComplexFourier()
 class ComplexFourier( Transform ):
