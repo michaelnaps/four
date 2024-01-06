@@ -14,6 +14,7 @@ from KMAN.Regressors import *
 # Class: Transform()
 class Transform:
     def __init__(self, T, X, N=None, dt=None):
+        # Initialize transform variables and dimensions.
         self.T = T
         self.X = X
         self.N = round( T.shape[1]/2 ) if N is None else N
@@ -141,10 +142,8 @@ class RealFourier( Transform ):
         # Get serialized form of data set.
         tSin, tCos = self.serialize( T )
 
-        # Return approtimation using coefficient matrices.
-        Y = np.empty( (self.Nx, Nt) )
-        for i in range( self.Nx ):
-            Y[i,:] = self.A[i,:]@tSin + self.B[i,:]@tCos
+        # Return approximation from coefficient matrices.
+        Y = self.A@tSin + self.B@tCos
         return Y
 
 
