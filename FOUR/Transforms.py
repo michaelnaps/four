@@ -49,7 +49,7 @@ class RealFourier( Transform ):
     # Default print function.
     def __str__(self):
         assert self.A is not None or self.B is not None, \
-            "\n ERROR: RealFourier.A, or RealFourier.B has not been set...\n"
+            "\nERROR: RealFourier.A, or RealFourier.B has not been set...\n"
         line1 = 'tau: %.5e\n' % self.tau
         line2 = 'A.shape: (' + str(self.A.shape[0]) + ', ' + str(self.A.shape[1]) + ')\n'
         line3 = 'B.shape: (' + str(self.B.shape[0]) + ', ' + str(self.B.shape[1]) + ')\n'
@@ -81,9 +81,9 @@ class RealFourier( Transform ):
         return self
 
     def dft(self):
-        # Check that system is SIMO.
+        # Check that system is single input.
         assert self.K == 1, \
-            "ERROR: DFT requires that system be be SIMO or simpler."
+            "ERROR: RealFourier.dft() requires that system be single input."
 
         # Serialize the given data set.
         tSin, tCos = self.serialize()
@@ -129,9 +129,9 @@ class RealFourier( Transform ):
         return self
 
     def vectors(self, t):
-        # Check that system is SIMO.
+        # Check that system is single input.
         assert self.K == 1, \
-            "ERROR: RealFourier.vectors requires that system be be SIMO or simpler."
+            "ERROR: RealFourier.vectors() requires that system be single input."
 
         # Expand sin/cos functions around point.
         tSin, tCos = self.serialize( t )
