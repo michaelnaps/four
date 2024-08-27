@@ -77,12 +77,14 @@ class RealFourier( Transform ):
         # Return the serialized sets.
         return tSin, tCos
 
-    def dft(self):
+    def dft(self, verbose=0):
         # Check that system is single input.
         assert self.K == 1, \
             "ERROR: RealFourier.dft() requires that system be single input."
 
         # Serialize the given data set.
+        if verbose:
+            print( 'Creating sin and cos series over data set...' )
         tSin, tCos = self.serialize()
 
         # Initialize coefficient vectors.
@@ -90,6 +92,9 @@ class RealFourier( Transform ):
         self.B = np.empty( (self.Nx, self.N+1) )
 
         for i in range( self.Nx ):
+            if verbose:
+                print( 'Calculating coefficients for state space %i/%i.' % (i, self.Nx) )
+
             # Solve for when k=0.
             self.A[i,0] = 0
             self.B[i,0] = 1/(2*self.N)*sum( self.X[i,:] )
@@ -98,6 +103,9 @@ class RealFourier( Transform ):
             for k in range( 1,self.N ):
                 self.A[i,k] = 1/self.N*sum( self.X[i,:]*tSin[k,:] )
                 self.B[i,k] = 1/self.N*sum( self.X[i,:]*tCos[k,:] )
+                if verbose:
+                    print( '\tCoefficients %i/%i: (A,B) = (%.3e, %.3e).'
+                        % (k, self.N, self.A[i,k], self.B[i,k]) )
 
             # Solve for when k = N.
             self.A[i,self.N] = 0
