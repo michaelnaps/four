@@ -112,6 +112,7 @@ class RealFourier( Transform ):
             self.B[i,self.N] = 1/(2*self.N)*sum( self.X[i,:]*tCos[self.N,:] )
 
         # Return instance of self.
+        self.resError( self.T, self.X, save=1 )
         return self
 
     def dmd(self, N=None):
