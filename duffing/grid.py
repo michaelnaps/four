@@ -98,8 +98,7 @@ if __name__ == '__main__':
 
     # Fourier series approximation.
     gTrain = gridStack( gData )
-    fvar = RealFourier( tList, gTrain )
-    fvar.dmd( N=100 )
+    fvar = RealFourier( tList, gTrain ).dmd( N=100 )
 
     # Simulation step freq.
     dtmin = 0.1
