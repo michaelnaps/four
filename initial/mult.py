@@ -27,8 +27,7 @@ if __name__ == "__main__":
     XY = np.vstack( (X, Y) )
 
     # Initialize Transform variables.
-    fvar = RealFourier( T, XY )
-    fvar.dmd( N=25 )
+    fvar = RealFourier( T, XY ).dmd( N=25 )
 
     # Plot results.
     fig, axs = plt.subplots()

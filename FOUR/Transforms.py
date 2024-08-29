@@ -41,7 +41,8 @@ class RealFourier( Transform ):
         self.A = None   # sin(t) coefficients.
         self.B = None   # cos(t) coefficients.
         self.F = None   # List of frequencies.
-        self.P = None   # Power spectrum values.
+        self.P = None   # Individual power spectrum values.
+        self.R = None   # Power spectrum.
         self.Nx = X.shape[0]
 
         # Initialize Transform() as parent class.
@@ -56,23 +57,36 @@ class RealFourier( Transform ):
         line3 = '\tB.shape: (' + str(self.B.shape[0]) + ', ' + str(self.B.shape[1]) + ')\n'
         return line1 + line2 + line3
 
+    def frequencies(self):
+        self.F = np.empty( (self.K*(self.N+1),1) )
+        for k in range( self.K*(self.N+1) ):
+            self.F[k,:] = 2*np.pi*k/self.tau
+
+        # Return instance of self.
+        return self
+
     def serialize(self, T=None):
         # If data set is given use instead of 'default'.
         T = self.T if T is None else T
         M = T.shape[1]
 
-        # Initialize serialized set matrices.
-        tSin = np.zeros( (self.K*(self.N+1), M) )
-        tCos = np.ones(  (self.K*(self.N+1), M) )
+        # Create serialized set from frequency list.
+        self.frequencies()
+        tSin = np.sin( self.F*T )
+        tCos = np.cos( self.F*T )
 
-        # Iterate through for varying frequencies.
-        j = -1
-        for k in range( self.K*(self.N+1) ):
-            if k % (self.N + 1) == 0:
-                j = j + 1
-                continue
-            tSin[k,:] = np.sin( 2*np.pi*k*T[j,:]/self.tau )
-            tCos[k,:] = np.cos( 2*np.pi*k*T[j,:]/self.tau )
+        # Old set creation block...
+        # tSin = np.zeros( (self.K*(self.N+1), M) )
+        # tCos = np.ones( (self.K*(self.N+1), M) )
+
+        # # Iterate through for varying frequencies.
+        # j = -1
+        # for k in range( self.K*(self.N+1) ):
+        #     if k % (self.N + 1) == 0:
+        #         j = j + 1
+        #         continue
+        #     tSin[k,:] = np.sin( self.F[k]*T[j,:] )
+        #     tCos[k,:] = np.cos( self.F[k]*T[j,:] )
 
         # Return the serialized sets.
         return tSin, tCos
@@ -171,7 +185,8 @@ class RealFourier( Transform ):
             "ERROR: Coefficient lists are not set."
 
         # Calculate power series from sin and cos functions.
-        self.P = self.A**2 + self.B**2
+        self.P = np.array( [self.A**2, self.B**2] )
+        self.R = self.P[0] + self.P[1]
 
         # Return instance of self.
         return self
