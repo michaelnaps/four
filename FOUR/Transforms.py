@@ -81,7 +81,7 @@ class RealFourier( Transform ):
     def dft(self, verbose=0):
         # Check that system is single input.
         assert self.K == 1, \
-            "ERROR: RealFourier.dft() requires that system be single input."
+            "\nERROR: RealFourier.dft() requires that system be single input.\n"
 
         # Serialize the given data set.
         if verbose:
@@ -141,7 +141,7 @@ class RealFourier( Transform ):
     def vectors(self, t):
         # Check that system is single input.
         assert self.K == 1, \
-            "ERROR: RealFourier.vectors() requires that system be single input."
+            "\nERROR: RealFourier.vectors() requires that system be single input.\n"
 
         # Expand sin/cos functions around point.
         tSin, tCos = self.serialize( t )
@@ -167,9 +167,9 @@ class RealFourier( Transform ):
         return V
 
     def powerspec(self):
-        # Break if sin/cos coefficients are not calculated.
+        # Quit if coefficients are not set.
         assert self.A is not None or self.B is not None, \
-            "ERROR: Coefficient lists are not set."
+            "\nERROR: RealFourier.A, or RealFourier.B has not been set...\n"
 
         # Calculate power series from sin and cos functions.
         self.P = np.array( [self.A**2, self.B**2] )
