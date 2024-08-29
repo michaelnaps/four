@@ -38,10 +38,10 @@ class Transform:
 class RealFourier( Transform ):
     def __init__(self, T, X, N=None, dt=None):
         # Intialize coefficient matrices to None.
-        self.A = None   # sin(t) coefficients
-        self.B = None   # cos(t) coefficients
-        self.R = None   # Amplitude values
-        self.P = None   # Period values
+        self.A = None   # sin(t) coefficients.
+        self.B = None   # cos(t) coefficients.
+        self.F = None   # List of frequencies.
+        self.P = None   # Power spectrum values.
         self.Nx = X.shape[0]
 
         # Initialize Transform() as parent class.
@@ -55,6 +55,15 @@ class RealFourier( Transform ):
         line2 = '\tA.shape: (' + str(self.A.shape[0]) + ', ' + str(self.A.shape[1]) + ')\n'
         line3 = '\tB.shape: (' + str(self.B.shape[0]) + ', ' + str(self.B.shape[1]) + ')\n'
         return line1 + line2 + line3
+
+    def freqlist(self):
+        # Initialize and calculate frequency list.
+        self.F = np.empty( (self.Nx, self.N+1) )
+        for k in range( self.N+1 ):
+            self.F[:,k] = 2*np.pi*k/self.tau
+
+        # Return instance of self.
+        return self
 
     def serialize(self, T=None):
         # If data set is given use instead of 'default'.
@@ -112,6 +121,7 @@ class RealFourier( Transform ):
             self.B[i,self.N] = 1/(2*self.N)*sum( self.X[i,:]*tCos[self.N,:] )
 
         # Return instance of self.
+        self.powerspec()
         self.resError( self.T, self.X, save=1 )
         return self
 
@@ -132,6 +142,7 @@ class RealFourier( Transform ):
         self.B = C[:,self.K*(self.N+1):]
 
         # Return instance of self.
+        self.powerspec()
         self.resError( self.T, self.X, save=1 )
         return self
 
@@ -162,6 +173,17 @@ class RealFourier( Transform ):
 
         # Return vector list.
         return V
+
+    def powerspec(self):
+        # Break if sin/cos coefficients are not calculated.
+        assert self.A is not None or self.B is not None, \
+            "ERROR: Coefficient lists are not set."
+
+        # Calculate power series from sin and cos functions.
+        self.P = self.A**2 + self.B**2
+
+        # Return instance of self.
+        return self
 
     def solve(self, T=None):
         # Is given set is none, use default.

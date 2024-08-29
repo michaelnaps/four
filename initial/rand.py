@@ -13,6 +13,8 @@ if __name__ == "__main__":
     fvar = RealFourier( X, Y )
     fvar.dft()
     print( fvar )
+    print( fvar.A )
+    print( fvar.B )
 
     # Solve over range.
     Xdft = np.linspace( 0, dx*(Nx - 1), 1000 )[None]
