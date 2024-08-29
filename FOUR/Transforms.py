@@ -56,18 +56,6 @@ class RealFourier( Transform ):
         line3 = '\tB.shape: (' + str(self.B.shape[0]) + ', ' + str(self.B.shape[1]) + ')\n'
         return line1 + line2 + line3
 
-    def freqlist(self, N=None):
-        # Frequency list length.
-        N = self.N if N is None else N
-
-        # Initialize and calculate frequency list.
-        self.F = np.empty( (self.Nx, self.N+1) )
-        for k in range( self.N+1 ):
-            self.F[:,k] = 2*np.pi*k/self.tau
-
-        # Return instance of self.
-        return self
-
     def serialize(self, T=None):
         # If data set is given use instead of 'default'.
         T = self.T if T is None else T
@@ -79,12 +67,11 @@ class RealFourier( Transform ):
 
         # Iterate through for varying frequencies.
         j = -1
-        self.freqlist( N=self.K*(self.N+1) )
-        for k, f in enumerate( self.F ):
+        for k in range( self.K*(self.N+1) ):
             if k % (self.N + 1) == 0:
                 j = j + 1
                 continue
-            tSin[k,:] = np.sin( f*T[j,:] )
+            tSin[k,:] = np.sin( 2*np.pi*k*T[j,:]/self.tau )
             tCos[k,:] = np.cos( 2*np.pi*k*T[j,:]/self.tau )
 
         # Return the serialized sets.
