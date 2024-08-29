@@ -75,19 +75,6 @@ class RealFourier( Transform ):
         tSin = np.sin( self.F*T )
         tCos = np.cos( self.F*T )
 
-        # Old set creation block...
-        # tSin = np.zeros( (self.K*(self.N+1), M) )
-        # tCos = np.ones( (self.K*(self.N+1), M) )
-
-        # # Iterate through for varying frequencies.
-        # j = -1
-        # for k in range( self.K*(self.N+1) ):
-        #     if k % (self.N + 1) == 0:
-        #         j = j + 1
-        #         continue
-        #     tSin[k,:] = np.sin( self.F[k]*T[j,:] )
-        #     tCos[k,:] = np.cos( self.F[k]*T[j,:] )
-
         # Return the serialized sets.
         return tSin, tCos
 
