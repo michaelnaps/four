@@ -7,9 +7,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-from FOUR.Transforms import *
 from GEOM.Vectors import *
 from GEOM.Vehicle2D import *
+
+from args import *
 
 datafile = 'data/xytest01.csv'
 
@@ -48,6 +49,7 @@ if __name__ == "__main__":
     vyvar = Vectors( np.flipud( vyList ), fig=fig, axs=axs ).draw()
     cxvar = Vectors( xconnector, fig=fig, axs=axs, color='grey' ).draw()
     cyvar = Vectors( yconnector, fig=fig, axs=axs, color='grey' ).draw()
+    axs.axis( 'equal' )
 
     while t < 500:
         t = t + dt

@@ -1,16 +1,9 @@
-import sys
-from os.path import expanduser
-sys.path.insert(0, expanduser('~')+'/prog/kman')
 
-import numpy as np
-import matplotlib.pyplot as plt
-
-# Personal classes.
-from FOUR.Transforms import *
+from args import *
 
 # Hyper parameter(s).
 Nmax = 100
-dN = 20
+dN = 10
 beta = 0.001
 
 # Square wave initialization.
@@ -30,11 +23,13 @@ if __name__ == '__main__':
     fig, axs = plt.subplots()
     axs.plot( X.T, Y.T, color='r', label='Model' )
 
-    for n in range( 0, Nmax+1, dN ):
-        if n == 0:  n = n + 1;
-        fvar.dmd( N=n )
-        Yf = fvar.solve( X )
-        axs.plot( X.T, Yf.T, linestyle=None, label=('N=%i' % n) )
+    Xf = np.linspace( -T-1, T+1, 2*Nt )[None]
+    for n in range( 1, Nmax+1, dN ):
+        N = n-1 if n > 1 else n
+        fvar.dmd( N=N )
+        Yf = fvar.solve( Xf )
+        axs.plot( Xf.T, Yf.T, linestyle=None, label=('N=%i' % N) )
+        print( fvar )
 
     plt.grid( 1 )
     plt.legend()

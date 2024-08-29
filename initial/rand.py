@@ -1,7 +1,5 @@
-import numpy as np
-import matplotlib.pyplot as plt
 
-from FOUR.Transforms import *
+from args import *
 
 if __name__ == "__main__":
     # Generate random data set with equally spaced points.
@@ -14,10 +12,7 @@ if __name__ == "__main__":
     # Results from class solver.
     fvar = RealFourier( X, Y )
     fvar.dft()
-    # fvar.dmd()
-    print( 'Error:', np.linalg.norm( Y - fvar.solve( X ) ) )
-    print( 'A:', fvar.A )
-    print( 'B:', fvar.B )
+    print( fvar )
     Ysolver = fvar.solve( Xdft )
 
     # Plot results.

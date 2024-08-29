@@ -1,12 +1,5 @@
-import sys
-from os.path import expanduser
-sys.path.insert(0, expanduser('~')+'/prog/kman')
 
-import numpy as np
-import matplotlib.pyplot as plt
-
-# Personal classes.
-from FOUR.Transforms import *
+from args import *
 
 # Hyper parameter(s).
 Nmax = 20
