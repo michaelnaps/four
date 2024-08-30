@@ -50,7 +50,7 @@ class RealFourier( Transform ):
         self.B = None   # cos(t) coefficients.
         self.P = None   # Individual power spectrum values.
         self.R = None   # Power spectrum.
-        self.Nx = X.shape[0]
+        self.Nt = X.shape[0]
 
         # Initialize Transform() as parent class.
         Transform.__init__( self, T, X, N=N, dt=dt )
@@ -87,12 +87,12 @@ class RealFourier( Transform ):
         tSin, tCos = self.serialize()
 
         # Initialize coefficient vectors.
-        self.A = np.empty( (self.Nx, self.N+1) )
-        self.B = np.empty( (self.Nx, self.N+1) )
+        self.A = np.empty( (self.Nt, self.N+1) )
+        self.B = np.empty( (self.Nt, self.N+1) )
 
-        for i in range( self.Nx ):
+        for i in range( self.Nt ):
             if verbose:
-                print( 'Calculating coefficients for state space %i/%i.' % (i, self.Nx) )
+                print( 'Calculating coefficients for state space %i/%i.' % (i, self.Nt) )
 
             # Solve for when k=0.
             self.A[i,0] = 0
@@ -147,8 +147,8 @@ class RealFourier( Transform ):
         # Initialize vector matrices.
         Vx = np.empty( (1, 2*(self.N+1)) )
         Vy = np.empty( (1, 2*(self.N+1)) )
-        V = np.zeros( (self.Nx, 2, 2*(self.N+1)) )
-        for i in range( self.Nx ):
+        V = np.zeros( (self.Nt, 2, 2*(self.N+1)) )
+        for i in range( self.Nt ):
             # Calculate x and y components of vectors.
             k = 0
             for j in range( self.N+1 ):
@@ -170,7 +170,7 @@ class RealFourier( Transform ):
             "\nERROR: RealFourier.A, or RealFourier.B has not been set...\n"
 
         # Calculate power series from sin and cos functions.
-        self.P = np.array( [self.A**2, self.B**2] )
+        self.P = 1/(4*(self.N + 1))*np.array( [self.A**2, self.B**2] )
         self.R = self.P[0] + self.P[1]
 
         # Return instance of self.
@@ -242,6 +242,45 @@ class ComplexFourier( Transform ):
 
         # Return the serialized sets.
         return tExpN, tExpP
+
+    def dft(self, verbose=0):
+        # Check that system is single input.
+        assert self.K == 1, \
+            "\nERROR: ComplexFourier.dft() requires that system be single input.\n"
+
+        # Serialize the given data set.
+        if verbose:
+            print( 'Creating sin and cos series over data set...' )
+        tExpN, tExpP = self.serialize()
+
+        # Initialize coefficient vectors.
+        self.Cn = np.empty( (self.Nt, self.N+1) )
+        self.Cp = np.empty( (self.Nt, self.N+1) )
+
+        # for i in range( self.Nt ):
+        #     if verbose:
+        #         print( 'Calculating coefficients for state space %i/%i.' % (i, self.Nt) )
+
+        #     # Solve for when k=0.
+        #     self.A[i,0] = 0
+        #     self.B[i,0] = 1/(2*self.N)*sum( self.X[i,:] )
+
+        #     # Solve for when 0 < k < N.
+        #     for k in range( 1,self.N ):
+        #         self.A[i,k] = 1/self.N*sum( self.X[i,:]*tSin[k,:] )
+        #         self.B[i,k] = 1/self.N*sum( self.X[i,:]*tCos[k,:] )
+        #         if verbose:
+        #             print( '\tCoefficients %i/%i: (A,B) = (%.3e, %.3e).'
+        #                 % (k, self.N, self.A[i,k], self.B[i,k]) )
+
+        #     # Solve for when k = N.
+        #     self.A[i,self.N] = 0
+        #     self.B[i,self.N] = 1/(2*self.N)*sum( self.X[i,:]*tCos[self.N,:] )
+
+        # # Return instance of self.
+        # self.powerspec()
+        # self.resError( self.T, self.X, save=1 )
+        return self
 
     def solve(self, T=None):
         # Is given set is none, use default.
