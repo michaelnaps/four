@@ -6,24 +6,30 @@ if __name__ == "__main__":
     Nx = 20  # Chosen arbitrarily.
     L = 10   # Chosen arbitrarily.
     dx = np.random.rand()
-    X = np.array( [[i*dx for i in range( Nx )]] )
-    Y = 2*L*np.random.rand( 1,Nx ) - L
+    Xlearn = np.array( [[i*dx for i in range( Nx )]] )
+    Ylearn = 2*L*np.random.rand( 1,Nx ) - L
 
     # Results from class solver.
-    fvar = RealFourier( X, Y )
+    fvar = RealFourier( Xlearn, Ylearn )
     fvar.dft()
     print( fvar )
-    print( fvar.A )
-    print( fvar.B )
 
-    # Solve over range.
-    Xdft = np.linspace( 0, dx*(Nx - 1), 1000 )[None]
-    Ydft = fvar.solve( Xdft )
+    # Solve over range using real Fourier.
+    X = np.linspace( 0, dx*(Nx - 1), 1000 )[None]
+    Yr = fvar.solve( X )
+
+    # Test real -> complex function.
+    cvar = ComplexFourier( Xlearn, Ylearn ).RtoC( fvar )
+    print( cvar )
+
+    # Solve over range using complex Fourier.
+    Yc = cvar.solve( X )
 
     # Plot results.
     fig, axs = plt.subplots()
-    plt.plot( X.T, Y.T, marker='o', label='true' )
-    plt.plot( Xdft.T, Ydft.T, linestyle=':', label='solver' )
+    plt.plot( Xlearn.T, Ylearn.T, marker='o', label='true' )
+    plt.plot( X.T, Yr.T, linestyle='--', label='real' )
+    plt.plot( X.T, np.real( Yc.T ), linestyle=':', label='complex' )
     plt.legend()
     plt.grid( 1 )
     plt.show()
