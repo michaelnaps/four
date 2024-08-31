@@ -176,15 +176,20 @@ class RealFourier( Transform ):
         # Return instance of self.
         return self
 
-    def solve(self, T=None):
-        # Is given set is none, use default.
+    def solve(self, T=None, N=None):
+        # Truncate signal list if requested
+        N = self.N if N is None else N
+        assert N <= self.N, \
+            "\nERROR: Requested number of coefficients exceeds length of current list.\n"
+
+        # Return solution over training data unless given.
         T = self.T if T is None else T
 
         # Get serialized form of data set.
         tSin, tCos = self.serialize( T )
 
         # Return approximation from coefficient matrices.
-        Y = self.A@tSin + self.B@tCos
+        Y = self.A[:,:N]@tSin[:N] + self.B[:,:N]@tCos[:N]
         return Y
 
     def resError(self, T=None, X=None, save=0):
