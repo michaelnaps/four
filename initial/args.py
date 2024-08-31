@@ -9,3 +9,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from FOUR.Transforms import *
+
+# Set global number print setting.
+np.set_printoptions(precision=3, suppress=True, linewidth=np.inf)

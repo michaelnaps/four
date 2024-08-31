@@ -19,7 +19,7 @@ if __name__ == "__main__":
     Yr = fvar.solve( X )
 
     # Test real -> complex function.
-    cvar = ComplexFourier( Xlearn, Ylearn ).RtoC( fvar )
+    cvar = ComplexFourier( Xlearn, Ylearn ).dft( verbose=1 )
     print( cvar )
 
     # Solve over range using complex Fourier.

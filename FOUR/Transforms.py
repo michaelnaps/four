@@ -20,6 +20,7 @@ class Transform:
         self.F = None   # List of frequencies.
         self.K = T.shape[0]
         self.N = round( T.shape[1]/2 ) if N is None else N
+        self.Nt = X.shape[0]
         self.dt = self.T[0,1] - self.T[0,0] if dt is None else dt
         self.tau = 2*self.N*self.dt
         self.err = None
@@ -49,8 +50,7 @@ class RealFourier( Transform ):
         self.A = None   # sin(t) coefficients.
         self.B = None   # cos(t) coefficients.
         self.P = None   # Individual power spectrum values.
-        self.R = None   # Power spectrum.
-        self.Nt = X.shape[0]
+        self.R = None   # Power spectrum.s
 
         # Initialize Transform() as parent class.
         Transform.__init__( self, T, X, N=N, dt=dt )
@@ -254,32 +254,35 @@ class ComplexFourier( Transform ):
         tExpN, tExpP = self.serialize()
 
         # Initialize coefficient vectors.
-        self.Cn = np.empty( (self.Nt, self.N+1) )
-        self.Cp = np.empty( (self.Nt, self.N+1) )
+        self.Cn = np.empty( (self.Nt, self.N+1), dtype=complex )
+        self.Cp = np.empty( (self.Nt, self.N+1), dtype=complex )
 
-        # for i in range( self.Nt ):
-        #     if verbose:
-        #         print( 'Calculating coefficients for state space %i/%i.' % (i, self.Nt) )
+        for i in range( self.Nt ):
+            if verbose:
+                print( 'Calculating coefficients for state space %i/%i.' % (i, self.Nt) )
 
-        #     # Solve for when k=0.
-        #     self.A[i,0] = 0
-        #     self.B[i,0] = 1/(2*self.N)*sum( self.X[i,:] )
+            # Solve for when k=0.
+            self.Cn[i,0] = 1/(2*self.N)*sum( self.X[i,:] )
+            self.Cp[i,0] = 1/(2*self.N)*sum( self.X[i,:] )
 
-        #     # Solve for when 0 < k < N.
-        #     for k in range( 1,self.N ):
-        #         self.A[i,k] = 1/self.N*sum( self.X[i,:]*tSin[k,:] )
-        #         self.B[i,k] = 1/self.N*sum( self.X[i,:]*tCos[k,:] )
-        #         if verbose:
-        #             print( '\tCoefficients %i/%i: (A,B) = (%.3e, %.3e).'
-        #                 % (k, self.N, self.A[i,k], self.B[i,k]) )
+            # Solve for when 0 < k < N.
+            for k in range( 1,self.N ):
+                self.Cn[i,k] = 1/(2*self.N)*sum( self.X[i,:]*tExpN[k,:] )
+                self.Cp[i,k] = 1/(2*self.N)*sum( self.X[i,:]*tExpP[k,:] )
+                if verbose:
+                    print( '\tCoefficients %i/%i: (Cn,Cp) = (' % (k, self.N),
+                        self.Cn[i,k], ',', self.Cp[i,k], ')' )
 
-        #     # Solve for when k = N.
-        #     self.A[i,self.N] = 0
-        #     self.B[i,self.N] = 1/(2*self.N)*sum( self.X[i,:]*tCos[self.N,:] )
+            # Solve for when k = N.
+            self.Cn[i,self.N] = 0
+            self.Cp[i,self.N] = 1/(2*self.N)*sum( self.X[i,:]*tCos[self.N,:] )
 
         # # Return instance of self.
         # self.powerspec()
         # self.resError( self.T, self.X, save=1 )
+        return self
+
+        # Return instance of self.
         return self
 
     def solve(self, T=None):
