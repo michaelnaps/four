@@ -173,6 +173,9 @@ class RealFourier( Transform ):
         self.P = 1/(4*(self.N + 1))*np.array( [self.A**2, self.B**2] )
         self.R = self.P[0] + self.P[1]
 
+        # Create sort of most significant coefficient terms.
+        self.sort = np.argsort( self.R, kind='quicksort' )
+
         # Return instance of self.
         return self
 
