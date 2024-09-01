@@ -52,7 +52,8 @@ class RealFourier( Transform ):
         self.A = None   # sin(t) coefficients.
         self.B = None   # cos(t) coefficients.
         self.P = None   # Individual power spectrum values.
-        self.R = None   # Power spectrum.s
+        self.R = None   # Power spectrum.
+        self.Rmax = None    # Maximum spectral coefficient.
 
         # Initialize Transform() as parent class.
         Transform.__init__( self, T, X, N=N, dt=dt )
@@ -176,10 +177,11 @@ class RealFourier( Transform ):
         self.P = 1/(4*(self.N + 1))*np.array( [self.A**2, self.B**2] )
 
         # Divide all coefficients by maximum and sub for power spectrum.
-        pmax = np.max( np.hstack( self.P ) )
-        self.R = (self.P[0] + self.P[1])/pmax
+        self.R = self.P[0] + self.P[1]
+        self.Rmax = np.max( self.R )
+        self.R = self.R/self.Rmax           # Normalize power spectrum.
 
-        # Create sort of most significant coefficient terms.
+        # Create sorted list of most significant coefficient terms.
         self.sort = np.argsort( self.R, kind='quicksort' )
 
         # Return instance of self.
