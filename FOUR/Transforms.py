@@ -177,12 +177,13 @@ class RealFourier( Transform ):
         self.P = 1/(4*(self.N + 1))*np.array( [self.A**2, self.B**2] )
 
         # Divide all coefficients by maximum and sub for power spectrum.
-        self.R = self.P[0] + self.P[1]
+        self.R = np.sum( self.P, axis=0 )
         self.Rmax = np.max( self.R )
         self.R = self.R/self.Rmax           # Normalize power spectrum.
 
         # Create sorted list of most significant coefficient terms.
         self.sort = np.argsort( self.R, kind='quicksort' )
+        print( self.sort.shape )
 
         # Return instance of self.
         return self
@@ -200,7 +201,9 @@ class RealFourier( Transform ):
         tSin, tCos = self.serialize( T )
 
         # Return approximation from coefficient matrices.
-        Y = self.A[:,:N]@tSin[:N] + self.B[:,:N]@tCos[:N]
+        Y = np.empty( (self.Nt, T.shape[1]) )
+        for i, isort in enumerate( self.sort ):
+            Y[i] = self.A[i,isort[-N:]]@tSin[isort[-N:]] + self.B[i,isort[-N:]]@tCos[isort[-N:]]
         return Y
 
     def resError(self, T=None, X=None, save=0):
