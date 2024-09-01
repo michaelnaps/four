@@ -35,10 +35,12 @@ class Transform:
         # Return instance of self.
         return self
 
-    def frequencies(self):
+    def frequencies(self, scale=None):
+        scale = 1 if scale is None else scale
+
         self.F = np.empty( (self.K*(self.N+1),1) )
         for k in range( self.K*(self.N+1) ):
-            self.F[k,:] = 2*np.pi*k/self.tau
+            self.F[k,:] = 2*scale*np.pi*k/self.tau
 
         # Return instance of self.
         return self
@@ -64,12 +66,12 @@ class RealFourier( Transform ):
         line3 = '\tB.shape: (' + str(self.B.shape[0]) + ', ' + str(self.B.shape[1]) + ')\n'
         return line1 + line2 + line3
 
-    def serialize(self, T=None):
+    def serialize(self, T=None, scale=None):
         # If data set is given use instead of 'default'.
         T = self.T if T is None else T
 
         # Create serialized set from frequency list.
-        self.frequencies()
+        self.frequencies( scale=scale )
         tSin = np.sin( self.F*T )
         tCos = np.cos( self.F*T )
 
@@ -117,6 +119,7 @@ class RealFourier( Transform ):
 
     def dmd(self, N=None):
         # Set number of cos/sin terms.
+        self.N
         if N is not None:
             self.N = N
 
@@ -171,7 +174,10 @@ class RealFourier( Transform ):
 
         # Calculate power series from sin and cos functions.
         self.P = 1/(4*(self.N + 1))*np.array( [self.A**2, self.B**2] )
-        self.R = self.P[0] + self.P[1]
+
+        # Divide all coefficients by maximum and sub for power spectrum.
+        pmax = np.max( np.hstack( self.P ) )
+        self.R = (self.P[0] + self.P[1])/pmax
 
         # Create sort of most significant coefficient terms.
         self.sort = np.argsort( self.R, kind='quicksort' )
