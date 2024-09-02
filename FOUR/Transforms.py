@@ -18,6 +18,8 @@ class Transform:
         self.T = T      # Input data.
         self.X = X      # Output data.
         self.F = None   # List of frequencies.
+        self.R = None   # Power spectrum values.
+        self.Fmean = None
         self.K = T.shape[0]
         self.N = round( T.shape[1]/2 ) if N is None else N
         self.Nt = X.shape[0]
@@ -45,14 +47,24 @@ class Transform:
         # Return instance of self.
         return self
 
+    def centroidfreq(self, P=None):
+        assert not (self.F is None and self.R is None), \
+            "\nERROR: Either Transform.F or Transform.R have not been sets.\n"
+
+        # Compute weighted average over power spectrum.
+        self.Fmean = self.R@self.F/np.sum( self.R, axis=1 )
+        self.Tmean = 1/self.Fmean
+
+        # Return instance of self.
+        return self
+
 # Class: RealFourier()
 class RealFourier( Transform ):
     def __init__(self, T, X, N=None, dt=None):
         # Intialize coefficient matrices to None.
         self.A = None   # sin(t) coefficients.
         self.B = None   # cos(t) coefficients.
-        self.P = None   # Individual power spectrum values.
-        self.R = None   # Power spectrum.
+        self.P = None   # Power spectrum split by A/B coefficients.
         self.Rmax = None    # Maximum spectral coefficient.
 
         # Initialize Transform() as parent class.
@@ -60,12 +72,14 @@ class RealFourier( Transform ):
 
     # Default print function.
     def __str__(self):
-        assert self.A is not None or self.B is not None, \
+        assert not (self.A is None and self.B is None), \
             "\nERROR: RealFourier.A, or RealFourier.B has not been set...\n"
         line1 = 'Error: %.5e\n' % (-1 if self.err is None else self.err)
-        line2 = '\tA.shape: (' + str(self.A.shape[0]) + ', ' + str(self.A.shape[1]) + ')\n'
-        line3 = '\tB.shape: (' + str(self.B.shape[0]) + ', ' + str(self.B.shape[1]) + ')\n'
-        return line1 + line2 + line3
+        line2 = 'Centroid frequency: ' + str( self.Fmean.T ) + '\n'
+        line3 = 'Average period:     ' + str( self.Tmean.T ) + '\n'
+        line4 = '\tA.shape: (' + str(self.A.shape[0]) + ', ' + str(self.A.shape[1]) + ')\n'
+        line5 = '\tB.shape: (' + str(self.B.shape[0]) + ', ' + str(self.B.shape[1]) + ')\n'
+        return line1 + line2 + line3 + line4 + line5
 
     def serialize(self, T=None, scale=None):
         # If data set is given use instead of 'default'.
@@ -115,6 +129,7 @@ class RealFourier( Transform ):
 
         # Return instance of self.
         self.powerspec()
+        self.centroidfreq()
         self.resError( self.T, self.X, save=1 )
         return self
 
@@ -137,6 +152,7 @@ class RealFourier( Transform ):
 
         # Return instance of self.
         self.powerspec()
+        self.centroidfreq()
         self.resError( self.T, self.X, save=1 )
         return self
 
