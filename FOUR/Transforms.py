@@ -209,7 +209,6 @@ class RealFourier( Transform ):
 
         # Create sorted list of most significant coefficient terms.
         self.sort = np.argsort( self.R, kind='quicksort' )
-        print( self.sort.shape )
 
         # Return instance of self.
         return self
