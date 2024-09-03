@@ -11,6 +11,16 @@ sys.path.insert( 0, expanduser('~')+'/prog/kman' )
 import numpy as np
 from KMAN.Regressors import *
 
+def autocorrelate(fvar, lag=None):
+    laglist = fvar.T if lag is None else laglist
+    acflist = np.empty( laglist.shape )
+
+    for i, lag in enumerate( laglist.T ):
+        acflist[:,i] = fvar.solve( fvar.T )@fvar.solve( fvar.T - lag ).T
+    acflist = acflist/acflist[:,0]
+
+    return laglist, acflist
+
 # Class: Transform()
 class Transform:
     def __init__(self, T, X, N=None, dt=None):
