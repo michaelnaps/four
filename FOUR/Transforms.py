@@ -88,7 +88,7 @@ class RealFourier( Transform ):
         line2 = 'Centroid frequency: ' + str( self.Fmean.T ) + '\n'
         line3 = 'Average period:     ' + str( self.Tmean.T ) + '\n'
         line4 = '\tA.shape: (' + str(self.A.shape[0]) + ', ' + str(self.A.shape[1]) + ')\n'
-        line5 = '\tB.shape: (' + str(self.B.shape[0]) + ', ' + str(self.B.shape[1]) + ')\n'
+        line5 = '\tB.shape: (' + str(self.B.shape[0]) + ', ' + str(self.B.shape[1]) + ')'
         return line1 + line2 + line3 + line4 + line5
 
     def serialize(self, T=None, scale=None):
