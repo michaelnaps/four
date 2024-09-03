@@ -10,8 +10,7 @@ if __name__ == "__main__":
     Ylearn = 2*L*np.random.rand( 1,Nx ) - L
 
     # Results from class solver.
-    fvar = RealFourier( Xlearn, Ylearn )
-    fvar.dft()
+    fvar = RealFourier( Xlearn, Ylearn ).dft()
     print( fvar )
 
     # Solve over range using real Fourier.
@@ -19,7 +18,7 @@ if __name__ == "__main__":
     Yr = fvar.solve( X )
 
     # Test real -> complex function.
-    cvar = ComplexFourier( Xlearn, Ylearn ).dft( verbose=1 )
+    cvar = ComplexFourier( Xlearn, Ylearn ).RtoC( fvar )#.dft( verbose=1 )
     print( cvar )
 
     # Solve over range using complex Fourier.
@@ -32,4 +31,10 @@ if __name__ == "__main__":
     plt.plot( X.T, np.real( Yc.T ), linestyle=':', label='complex' )
     plt.legend()
     plt.grid( 1 )
+
+    fig2, axs2 = plt.subplots()
+    laglist, acflist = autocorrelate( fvar )
+    axs2.plot( laglist.T, acflist.T )
+    axs2.grid( 1 )
+
     plt.show()
