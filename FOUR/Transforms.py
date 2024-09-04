@@ -1,4 +1,4 @@
-# File: LearningStrategies.py
+# File: Transforms.py
 # Created by: Michael Napoli
 # Created on: Jul 11, 2023
 # Purpose: To develop and study various methods of expanding
