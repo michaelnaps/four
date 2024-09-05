@@ -11,15 +11,29 @@ sys.path.insert( 0, expanduser('~')+'/prog/kman' )
 import numpy as np
 from KMAN.Regressors import *
 
-def autocorrelate(fvar, lag=None):
-    laglist = fvar.T if lag is None else laglist
-    acflist = np.empty( laglist.shape )
+def conjugate(X):
+    return np.real( X ) - np.imag( X )*1j
 
-    for i, lag in enumerate( laglist.T ):
-        acflist[:,i] = fvar.solve( fvar.T )@fvar.solve( fvar.T - lag ).T
-    acflist = acflist/acflist[:,0]
+def autocorrelate(cvar=None, fvar=None, llist=None):
+    assert cvar is not None or fvar is not None, \
+        'ERROR: Autocorrelate requires ComplexFourier or RealFourier variable.'
 
-    return laglist, acflist
+    # Convert to complex Fourier to match notes.
+    if cvar is None:
+        cvar = ComplexFourier( fvar.T, fvar.X ).RtoC( fvar )
+
+    # Initialize sets.
+    llist = cvar.T if llist is None else llist
+    flist = np.empty( llist.shape, dtype=complex )
+
+    # Iterate through lag list and calculate correlate.
+    for i, l in enumerate( llist.T ):
+        f = cvar.solve( fvar.T )
+        fT = cvar.solve( fvar.T - l ).T
+        flist[:,i] = f@conjugate( fT )
+    flist = flist/flist[:,0]
+
+    return llist, flist
 
 # Class: Transform()
 class Transform:
@@ -59,11 +73,11 @@ class Transform:
 
     def centroidfreq(self, P=None):
         assert not (self.F is None and self.R is None), \
-            "\nERROR: Either Transform.F or Transform.R have not been sets.\n"
+            "\nERROR: Either Transform.F or Transform.R have not been set.\n"
 
         # Compute weighted average over power spectrum.
         self.Fmean = self.R@self.F/np.sum( self.R, axis=1 )
-        self.Tmean = 1/self.Fmean
+        self.Tmean = (2*np.pi)/self.Fmean
 
         # Return instance of self.
         return self
