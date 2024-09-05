@@ -77,7 +77,7 @@ class Transform:
 
         # Compute weighted average over power spectrum.
         self.Fmean = self.R@self.F/np.sum( self.R, axis=1 )
-        self.Tmean = (2*np.pi)/self.Fmean
+        self.Tmean = (2*np.pi)/self.Fmean # self.F[self.sort[:,-1]]
 
         # Return instance of self.
         return self
