@@ -123,19 +123,19 @@ class RealFourier( Transform ):
 
             # Solve for when k=0.
             self.A[i,0] = 0
-            self.B[i,0] = 1/(2*self.N)*sum( self.X[i,:] )
+            self.B[i,0] = 1/(2*self.N)*np.sum( self.X[i,:] )
 
             # Solve for when 0 < k < N.
             for k in range( 1,self.N ):
-                self.A[i,k] = 1/self.N*sum( self.X[i,:]*tSin[k,:] )
-                self.B[i,k] = 1/self.N*sum( self.X[i,:]*tCos[k,:] )
+                self.A[i,k] = 1/self.N*np.sum( self.X[i,:]*tSin[k,:] )
+                self.B[i,k] = 1/self.N*np.sum( self.X[i,:]*tCos[k,:] )
                 if verbose:
                     print( '\tCoefficients %i/%i: (A,B) = (%.3e, %.3e).'
                         % (k, self.N, self.A[i,k], self.B[i,k]) )
 
             # Solve for when k = N.
             self.A[i,self.N] = 0
-            self.B[i,self.N] = 1/(2*self.N)*sum( self.X[i,:]*tCos[self.N,:] )
+            self.B[i,self.N] = 1/(2*self.N)*np.sum( self.X[i,:]*tCos[self.N,:] )
 
         # Return instance of self.
         self.powerspec()
@@ -205,7 +205,10 @@ class RealFourier( Transform ):
         # Divide all coefficients by maximum and sub for power spectrum.
         self.R = np.sum( self.P, axis=0 )
         self.Rmax = np.max( self.R )
-        self.R = self.R/self.Rmax           # Normalize power spectrum.
+
+        # Normalize components to power spectrum.
+        self.R = self.R/self.Rmax
+        self.P = self.P/self.Rmax
 
         # Create sorted list of most significant coefficient terms.
         self.sort = np.argsort( self.R, kind='quicksort' )
