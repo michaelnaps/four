@@ -62,11 +62,11 @@ class Transform:
         return self
 
     def frequencies(self, scale=None):
+        # Scale may be used to change frequency spacing.
         scale = 1 if scale is None else scale
 
-        self.F = np.empty( (self.K*(self.N+1),1) )
-        for k in range( self.K*(self.N+1) ):
-            self.F[k,:] = 2*scale*np.pi*k/self.tau
+        # Generate frequency list.
+        self.F = scale*2*np.pi/self.tau*np.arange( self.K*(self.N + 1) )[:,None]
 
         # Return instance of self.
         return self
