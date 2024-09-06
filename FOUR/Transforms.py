@@ -29,8 +29,8 @@ def autocorrelate(cvar=None, fvar=None, llist=None):
     # Iterate through lag list and calculate correlate.
     for i, l in enumerate( llist.T ):
         f = cvar.solve( fvar.T )
-        fT = cvar.solve( fvar.T - l ).T
-        flist[:,i] = f@conjugate( fT )
+        fC = cvar.solve( fvar.T - l ).T
+        flist[:,i] = f@conjugate( fC )
     flist = flist/flist[:,0]
 
     return llist, flist
@@ -77,7 +77,8 @@ class Transform:
 
         # Compute weighted average over power spectrum.
         self.Fmean = self.R@self.F/np.sum( self.R, axis=1 )
-        self.Tmean = (2*np.pi)/self.Fmean # self.F[self.sort[:,-1]]
+        # self.Tmean = (2*np.pi)/self.Fmean
+        self.Tmean = 2*np.pi/self.F[self.sort[:,-1]]
 
         # Return instance of self.
         return self
