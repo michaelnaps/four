@@ -43,13 +43,18 @@ class Transform:
         self.X = X      # Output data.
         self.F = None   # List of frequencies.
         self.R = None   # Power spectrum values.
-        self.Fmean = None
         self.K = T.shape[0]
         self.N = round( T.shape[1]/2 ) if N is None else N
         self.Nt = X.shape[0]
         self.dt = self.T[0,1] - self.T[0,0] if dt is None else dt
         self.tau = 2*self.N*self.dt
         self.err = None
+
+        # Values from spectral analysis.
+        self.Fmax = None
+        self.Fmean = None
+        self.Tmax = None
+        self.Tmean = None
 
     def setDataSets(self, T, X):
         self.__init__( T, X )
@@ -75,10 +80,13 @@ class Transform:
         assert not (self.F is None and self.R is None), \
             "\nERROR: Either Transform.F or Transform.R have not been set.\n"
 
-        # Compute weighted average over power spectrum.
+        # Frequency from weighted mean and spectral max.
+        self.Fmax = self.F[self.sort[:,-1]]
         self.Fmean = self.R@self.F/np.sum( self.R, axis=1 )
-        # self.Tmean = (2*np.pi)/self.Fmean
-        self.Tmean = 2*np.pi/self.F[self.sort[:,-1]]
+
+        # Period from weighted mean and spectral max.
+        self.Tmax = 2*np.pi/self.Fmax
+        self.Tmean = 2*np.pi/self.Fmean
 
         # Return instance of self.
         return self
