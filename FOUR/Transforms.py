@@ -14,49 +14,21 @@ from KMAN.Regressors import *
 def conjugate(X):
     return np.real( X ) - np.imag( X )*1j
 
-def autocorrelate(cvar=None, fvar=None, llist=None):
-    assert cvar is not None or fvar is not None, \
-        'ERROR: Autocorrelate requires ComplexFourier or RealFourier variable.'
-
-    # Convert to complex Fourier to match notes.
-    if cvar is not None:
-        tvar = cvar
-        fac = lambda f, fD: f@conjugate( fD ).T
-    elif fvar is not None:
-        tvar = fvar
-        fac = lambda f, fD: f@fD.T
+def autocorrelate(fvar, llist=None, reverse=0):
+    # Select either reverse/forward AC function.
+    if reverse:
+        fauto = lambda tlist, l: (fvar.solve( tlist ), fvar.solve( l - fvar.T ))
+    else:
+        fauto = lambda tlist, l: (fvar.solve( tlist ), fvar.solve( fvar.T - l ))
 
     # Initialize sets.
-    llist = tvar.T if llist is None else llist
+    llist = fvar.T if llist is None else llist
     flist = np.empty( llist.shape, dtype=complex )
 
     # Iterate through lag list and calculate correlate.
     for i, l in enumerate( llist.T ):
-        f = tvar.solve( fvar.T )
-        fD = tvar.solve( fvar.T - l )
-        flist[:,i] = fac( f, fD )
-    flist = flist/flist[:,0]
-
-    return llist, flist
-
-def reverse_autocorrelate(cvar=None, fvar=None, llist=None):
-    assert cvar is not None or fvar is not None, \
-        'ERROR: Autocorrelate requires ComplexFourier or RealFourier variable.'
-
-    # Convert to complex Fourier to match notes.
-    if cvar is None:
-        cvar = ComplexFourier( fvar.T, fvar.X ).RtoC( fvar )
-
-    # Initialize sets.
-    llist = cvar.T if llist is None else llist
-    flist = np.empty( llist.shape, dtype=complex )
-
-    # Iterate through lag list and calculate correlate.
-    for i, l in enumerate( llist.T ):
-        f = cvar.solve( fvar.T )
-        fC = cvar.solve( -(fvar.T - l) ).T
-        flist[:,i] = f@conjugate( fC )
-    flist = flist/np.max( flist, axis=1 )
+        f, fD = fauto( fvar.T, l )
+        flist[:,i] = f@fD.T/(np.sqrt( f@f.T )*np.sqrt( fD@fD.T ))
 
     return llist, flist
 
