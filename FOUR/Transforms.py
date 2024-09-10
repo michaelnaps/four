@@ -15,24 +15,6 @@ from KMAN.Regressors import *
 def conjugate(X):
     return np.real( X ) - np.imag( X )*1j
 
-def autocorrelate(fvar, llist=None, reverse=0):
-    # Select either reverse/forward AC function.
-    if reverse:
-        fauto = lambda tlist, l: (fvar.solve( tlist ), fvar.solve( l - fvar.T ))
-    else:
-        fauto = lambda tlist, l: (fvar.solve( tlist ), fvar.solve( fvar.T - l ))
-
-    # Initialize sets.
-    llist = fvar.T if llist is None else llist
-    flist = np.empty( llist.shape, dtype=complex )
-
-    # Iterate through lag list and calculate correlate.
-    for i, l in enumerate( llist.T ):
-        f, fD = fauto( fvar.T, l )
-        flist[:,i] = f@fD.T/(np.sqrt( f@f.T )*np.sqrt( fD@fD.T ))
-
-    return llist, flist
-
 # Class: CharacteristicWave()
 # Purpose: To be used to save the characteristic wave form found through the Transform() class.
 class CharacteristicWave:
@@ -235,6 +217,24 @@ class RealFourier( Transform ):
         self.centroidfreq()
         self.resError( self.T, self.X, save=1 )
         return self
+
+    def autocorrelate(self, llist=None, reverse=0):
+        # Select either reverse/forward AC function.
+        if reverse:
+            fauto = lambda tlist, l: (self.solve( tlist ), self.solve( l - self.T ))
+        else:
+            fauto = lambda tlist, l: (self.solve( tlist ), self.solve( self.T - l ))
+
+        # Initialize sets.
+        llist = self.T if llist is None else llist
+        flist = np.empty( llist.shape, dtype=complex )
+
+        # Iterate through lag list and calculate correlate.
+        for i, l in enumerate( llist.T ):
+            f, fD = fauto( self.T, l )
+            flist[:,i] = f@fD.T/(np.sqrt( f@f.T )*np.sqrt( fD@fD.T ))
+
+        return llist, flist
 
     def vectors(self, t):
         # Check that system is single input.
