@@ -9,6 +9,7 @@ from os.path import expanduser
 sys.path.insert( 0, expanduser('~')+'/prog/kman' )
 
 import numpy as np
+from FOUR.Preprocess import *
 from KMAN.Regressors import *
 
 def conjugate(X):
