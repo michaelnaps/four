@@ -32,6 +32,30 @@ def autocorrelate(fvar, llist=None, reverse=0):
 
     return llist, flist
 
+# Class: CharacteristicWave()
+# Purpose: To be used to save the characteristic wave form found through the Transform() class.
+class CharacteristicWave:
+    def __init__(self):
+        self.ampl = None
+        self.freq = None
+        self.phase = None
+
+    def setCharacteristics(self, ampl=None, freq=None, phase=None):
+        # Update components if given values are not None.
+        self.ampl = self.ampl if ampl is None else ampl
+        self.freq = self.freq if freq is None else freq
+        self.phase = self.phase if phase is None else phase
+
+        # Return instance of self.
+        return self
+
+    def solve(self, T):
+        assert None not in (self.freq, self.phase, self.ampl), \
+            'ERROR: One (or all) of CharacteristicWave.freq/phase/ampl is not set.'
+
+        # Return solution of wave form.
+        return self.ampl*np.sin( self.freq*T + self.phase )
+
 # Class: Transform()
 class Transform:
     def __init__(self, T, X, N=None, dt=None):
@@ -52,6 +76,9 @@ class Transform:
         self.Fmean = None
         self.Tmax = None
         self.Tmean = None
+
+        # Initialize parent class.
+        self.cwave = CharacteristicWave()
 
     def setDataSets(self, T, X):
         self.__init__( T, X )
@@ -122,6 +149,28 @@ class RealFourier( Transform ):
 
         # Return the serialized sets.
         return tSin, tCos
+
+    def powerspec(self):
+        # Quit if coefficients are not set.
+        assert self.A is not None or self.B is not None, \
+            "\nERROR: RealFourier.A, or RealFourier.B has not been set...\n"
+
+        # Calculate power series from sin and cos functions.
+        self.P = 1/(4*(self.N + 1))*np.array( [self.A**2, self.B**2] )
+
+        # Divide all coefficients by maximum and sub for power spectrum.
+        self.R = np.sum( self.P, axis=0 )
+        self.Rmax = np.max( self.R )
+
+        # Normalize components to power spectrum.
+        self.R = self.R/self.Rmax
+        self.P = self.P/self.Rmax
+
+        # Create sorted list of most significant coefficient terms.
+        self.sort = np.argsort( self.R, kind='quicksort' )
+
+        # Return instance of self.
+        return self
 
     def dft(self, verbose=0):
         # Check that system is single input.
@@ -213,28 +262,6 @@ class RealFourier( Transform ):
 
         # Return vector list.
         return V
-
-    def powerspec(self):
-        # Quit if coefficients are not set.
-        assert self.A is not None or self.B is not None, \
-            "\nERROR: RealFourier.A, or RealFourier.B has not been set...\n"
-
-        # Calculate power series from sin and cos functions.
-        self.P = 1/(4*(self.N + 1))*np.array( [self.A**2, self.B**2] )
-
-        # Divide all coefficients by maximum and sub for power spectrum.
-        self.R = np.sum( self.P, axis=0 )
-        self.Rmax = np.max( self.R )
-
-        # Normalize components to power spectrum.
-        self.R = self.R/self.Rmax
-        self.P = self.P/self.Rmax
-
-        # Create sorted list of most significant coefficient terms.
-        self.sort = np.argsort( self.R, kind='quicksort' )
-
-        # Return instance of self.
-        return self
 
     def solve(self, T=None, N=None):
         # Truncate signal list if requested
