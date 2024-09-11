@@ -19,6 +19,7 @@ def conjugate(X):
 # Purpose: To be used to save the characteristic wave form found through the Transform() class.
 class CharacteristicWave:
     def __init__(self):
+        # Initialize class variables.
         self.ampl = None
         self.freq = None
         self.phase = None
@@ -35,7 +36,6 @@ class CharacteristicWave:
     def solve(self, T):
         assert None not in (self.freq, self.phase, self.ampl), \
             'ERROR: One (or all) of CharacteristicWave.freq/phase/ampl is not set.'
-
         # Return solution of wave form.
         return self.ampl*np.sin( self.freq*T + self.phase )
 
