@@ -24,6 +24,11 @@ class CharacteristicWave:
         self.freq = None
         self.phase = None
 
+    def __str__(self):
+        line1 = 'Characteristic wave: '
+        line2 = 'x(t) = %.3f sin( %.3f t + %.3f )' % (self.ampl, self.freq, self.phase)
+        return line1 + line2
+
     def setCharacteristics(self, ampl=None, freq=None, phase=None):
         # Update components if given values are not None.
         self.ampl = self.ampl if ampl is None else ampl
@@ -95,6 +100,13 @@ class Transform:
         self.Tmax = 2*np.pi/self.Fmax
         self.Tmean = 2*np.pi/self.Fmean
 
+        # Calculate phase offset at max spectral freq.
+        pmax = 2*np.pi/np.arccos( self.A[:,self.sort[0,-1]]/
+            np.sqrt( self.A[:,self.sort[0,-1]]**2 + self.B[:,self.sort[0,-1]]**2 ) )
+
+        # Save characteristic wave data.
+        self.cwave.setCharacteristics( 1, self.Fmax, pmax )
+
         # Return instance of self.
         return self
 
@@ -118,8 +130,9 @@ class RealFourier( Transform ):
         line2 = 'Centroid frequency: ' + str( self.Fmean.T ) + '\n'
         line3 = 'Average period:     ' + str( self.Tmean.T ) + '\n'
         line4 = '\tA.shape: (' + str(self.A.shape[0]) + ', ' + str(self.A.shape[1]) + ')\n'
-        line5 = '\tB.shape: (' + str(self.B.shape[0]) + ', ' + str(self.B.shape[1]) + ')'
-        return line1 + line2 + line3 + line4 + line5
+        line5 = '\tB.shape: (' + str(self.B.shape[0]) + ', ' + str(self.B.shape[1]) + ')\n'
+        line6 = self.cwave.__str__()
+        return line1 + line2 + line3 + line4 + line5 + line6
 
     def serialize(self, T=None, scale=None):
         # If data set is given use instead of 'default'.
