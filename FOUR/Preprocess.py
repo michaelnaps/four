@@ -6,7 +6,8 @@
 
 import numpy as np
 
-def simplemovingaverage(T, X, W, dT=0.1):
+# Simple moving average function.
+def sma(T, X, W, dT=0.1):
     # Extract bounds of the new time-series.
     MT = T.shape[0];  MX = X.shape[0]
     Tmin = np.min( T );  Tmax = np.max( T )
