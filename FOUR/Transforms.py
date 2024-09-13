@@ -97,7 +97,7 @@ class Transform:
         self.Tmax = 2*np.pi/self.Fmax
         Cmax = np.sqrt( self.A[:,self.sort[0,-1]]**2 + self.B[:,self.sort[0,-1]]**2 )
         pmax = 2*np.pi/np.arccos( self.A[:,self.sort[0,-1]]/Cmax )
-        self.cwave.setCharacteristics( Cmax, self.Fmax, 0 )
+        self.cwave.setCharacteristics( Cmax, self.Fmax, pmax )
 
         # Mean characteristic wave.
         self.Fmean = self.R@self.F/np.sum( self.R, axis=1 )
