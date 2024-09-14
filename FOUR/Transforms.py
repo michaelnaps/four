@@ -79,12 +79,9 @@ class Transform:
         # Return instance of self.
         return self
 
-    def frequencies(self, scale=None):
-        # Scale may be used to change frequency spacing.
-        scale = 1 if scale is None else scale
-
+    def frequencies(self):
         # Generate frequency list.
-        self.F = scale*2*np.pi/self.tau*np.arange( self.K*(self.N + 1) )[:,None]
+        self.F = 2*np.pi/self.tau*np.arange( self.K*(self.N + 1) )[:,None]
 
         # Return instance of self.
         return self
@@ -135,12 +132,12 @@ class RealFourier( Transform ):
         line6 = self.cwave.__str__()
         return line1 + line2 + line3 + line4 + line5 + line6
 
-    def serialize(self, T=None, scale=None):
+    def serialize(self, T=None):
         # If data set is given use instead of 'default'.
         T = self.T if T is None else T
 
         # Create serialized set from frequency list.
-        self.frequencies( scale=scale )
+        self.frequencies()
         tSin = np.sin( self.F*T )
         tCos = np.cos( self.F*T )
 
@@ -291,10 +288,11 @@ class RealFourier( Transform ):
         tSin, tCos = self.serialize( T )
 
         # Return approximation from coefficient matrices.
-        Y = np.empty( (self.Nt, T.shape[1]) )
-        for i, isort in enumerate( self.sort ):
-            Y[i] = self.A[i,isort[-N:]]@tSin[isort[-N:]] + self.B[i,isort[-N:]]@tCos[isort[-N:]]
-        return Y
+        # Y = np.empty( (self.Nt, T.shape[1]) )
+        # for i, isort in enumerate( self.sort ):
+        #     Y[i] = self.A[i,isort[-N:]]@tSin[isort[-N:]] + self.B[i,isort[-N:]]@tCos[isort[-N:]]
+        # return Y
+        return self.A@tSin + self.B@tCos
 
     def resError(self, T=None, X=None, save=0):
         # Quit if coefficients are not set.
@@ -367,31 +365,21 @@ class ComplexFourier( Transform ):
         self.Cp = np.empty( (self.Nt, self.N+1), dtype=complex )
 
         for i in range( self.Nt ):
-            if verbose:
-                print( 'Calculating coefficients for state space %i/%i.' % (i, self.Nt) )
-
             # Solve for when k=0.
-            self.Cn[i,0] = 1/(2*self.N)*sum( self.X[i,:] )
-            self.Cp[i,0] = 1/(2*self.N)*sum( self.X[i,:] )
+            self.Cn[i,0] = 1/(4*self.N)*np.sum( self.X[i,:] )
+            self.Cp[i,0] = self.Cn[i,0]
 
             # Solve for when 0 < k < N.
             for k in range( 1,self.N ):
-                self.Cn[i,k] = 1/(2*self.N)*sum( self.X[i,:]*tExpN[k,:] )
-                self.Cp[i,k] = 1/(2*self.N)*sum( self.X[i,:]*tExpP[k,:] )
-                if verbose:
-                    print( '\tCoefficients %i/%i: (Cn,Cp) = (' % (k, self.N),
-                        self.Cn[i,k], ',', self.Cp[i,k], ')' )
+                self.Cn[i,k] = 1/(2*self.N)*np.sum( self.X[i,:]*tExpP[k,:] )
 
             # Solve for when k = N.
-            self.Cn[i,self.N] = 0
-            self.Cp[i,self.N] = 1/(2*self.N)*sum( self.X[i,:]*tCos[self.N,:] )
+            self.Cn[i,self.N] = 1/(4*self.N)*np.sum( self.X[i,:]*np.cos( self.F[-1]*self.T ) )
+        self.Cp[:,1:] = conjugate( self.Cn )[:,1:]
 
         # # Return instance of self.
         # self.powerspec()
         # self.resError( self.T, self.X, save=1 )
-        return self
-
-        # Return instance of self.
         return self
 
     def solve(self, T=None):

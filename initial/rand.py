@@ -18,11 +18,12 @@ if __name__ == "__main__":
     Yr = fvar.solve( X )
 
     # Test real -> complex function.
-    cvar = ComplexFourier( Xlearn, Ylearn ).RtoC( fvar )#.dft( verbose=1 )
+    cvar = ComplexFourier( Xlearn, Ylearn ).dft()
     print( cvar )
 
     # Solve over range using complex Fourier.
     Yc = cvar.solve( X )
+    # print( Yc )
 
     # Plot results.
     fig, axs = plt.subplots()
@@ -32,9 +33,9 @@ if __name__ == "__main__":
     plt.legend()
     plt.grid( 1 )
 
-    fig2, axs2 = plt.subplots()
-    laglist, acflist = autocorrelate( fvar )
-    axs2.plot( laglist.T, acflist.T )
-    axs2.grid( 1 )
+    # fig2, axs2 = plt.subplots()
+    # laglist, acflist = fvar.autocorrelate()
+    # axs2.plot( laglist.T, acflist.T )
+    # axs2.grid( 1 )
 
     plt.show()
