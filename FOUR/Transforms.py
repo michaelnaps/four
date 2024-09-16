@@ -314,6 +314,13 @@ class RealFourier( Transform ):
             self.err = err
         return err
 
+    def CtoR(self, cvar):
+        self.A = np.imag( cvar.Cn - cvar.Cp )
+        self.B = np.real( cvar.Cn + cvar.Cp )
+
+        # Return instance of self.
+        return self
+
 # Class: ComplexFourier()
 class ComplexFourier( Transform ):
     def __init__(self, T, X, N=None, dt=None):
@@ -371,7 +378,7 @@ class ComplexFourier( Transform ):
 
             # Solve for when 0 < k < N.
             for k in range( 1,self.N ):
-                self.Cn[i,k] = 1/(2*self.N)*np.sum( self.X[i,:]*tExpP[k,:] )
+                self.Cn[i,k] = 1/(2*self.N)*np.sum( self.X[i,:]*(-tExpN[k,:]) )
 
             # Solve for when k = N.
             self.Cn[i,self.N] = 1/(4*self.N)*np.sum( self.X[i,:]*np.cos( self.F[-1]*self.T ) )
@@ -400,3 +407,8 @@ class ComplexFourier( Transform ):
 
         # Return instance of self.
         return self
+
+class Characterize:
+    def __init__(self, fvar=None, cvar=None):
+        assert fvar is None and cvar is None, \
+            'ERROR: Characterize class requires RealFourier() or ComplexFourier() variables.'
