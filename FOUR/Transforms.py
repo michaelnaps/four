@@ -238,7 +238,7 @@ class RealFourier( Transform ):
 
         # Initialize sets.
         llist = self.T if llist is None else llist
-        flist = np.empty( llist.shape, dtype=complex )
+        flist = np.empty( llist.shape )
 
         # Iterate through lag list and calculate correlate.
         for i, l in enumerate( llist.T ):
