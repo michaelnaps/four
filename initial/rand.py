@@ -25,8 +25,8 @@ if __name__ == "__main__":
     Yc = cvar.solve( X )
     # print( Yc )
 
-    print( Characterize( fvar=fvar ).centroidalwave() )
-    print( Characterize( cvar=cvar ).centroidalwave() )
+    # print( Characterize( fvar=fvar ).centroidalwave() )
+    # print( Characterize( cvar=cvar ).centroidalwave() )
 
     # Plot results.
     fig, axs = plt.subplots()
