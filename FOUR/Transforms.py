@@ -18,11 +18,11 @@ def conjugate(X):
 # Class: CharacteristicWave()
 # Purpose: To be used to save the characteristic wave form found through the Transform() class.
 class CharacteristicWave:
-    def __init__(self):
+    def __init__(self, ampl=None, freq=None, phase=None):
         # Initialize class variables.
-        self.ampl = None
-        self.freq = None
-        self.phase = None
+        self.ampl = ampl
+        self.freq = freq
+        self.phase = phase
 
     def __str__(self):
         line1 = 'Characteristic wave: '
@@ -327,7 +327,7 @@ class ComplexFourier( Transform ):
         # Intialize coefficient matrices to None.
         self.Cn = None   # Complex coefficients (negative).
         self.Cp = None   # Complex coefficients (positive).
-        self.P = None   # Power spectrum.
+        self.P = None    # Power spectrum split by p/n coefficients.
 
         # Initialize Transform() as parent class.
         Transform.__init__( self, T, X, N=N, dt=dt )
@@ -357,6 +357,13 @@ class ComplexFourier( Transform ):
         # Return the serialized sets.
         return tExpN, tExpP
 
+    def powerspec(self):
+        self.P = 1/self.N*np.array( [self.Cn, self.Cp] )**2
+        self.R = np.hstack( self.P )
+
+        # Return instance of self.
+        return self
+
     def dft(self, verbose=0):
         # Check that system is single input.
         assert self.K == 1, \
@@ -378,14 +385,14 @@ class ComplexFourier( Transform ):
 
             # Solve for when 0 < k < N.
             for k in range( 1,self.N ):
-                self.Cn[i,k] = 1/(2*self.N)*np.sum( self.X[i,:]*(-tExpN[k,:]) )
+                self.Cn[i,k] = 1/(2*self.N)*np.sum( self.X[i,:]*tExpP[k,:] )
 
             # Solve for when k = N.
             self.Cn[i,self.N] = 1/(4*self.N)*np.sum( self.X[i,:]*np.cos( self.F[-1]*self.T ) )
         self.Cp[:,1:] = conjugate( self.Cn )[:,1:]
 
         # # Return instance of self.
-        # self.powerspec()
+        self.powerspec()
         # self.resError( self.T, self.X, save=1 )
         return self
 
@@ -410,5 +417,35 @@ class ComplexFourier( Transform ):
 
 class Characterize:
     def __init__(self, fvar=None, cvar=None):
-        assert fvar is None and cvar is None, \
+        # Check and save Fourier variable and type.
+        assert not (fvar is None and cvar is None), \
             'ERROR: Characterize class requires RealFourier() or ComplexFourier() variables.'
+        self.fvar = cvar if fvar is None else fvar
+        self.type = 'complex' if fvar is None else 'real'
+
+    def centroidalwave(self):
+        fvar = self.fvar
+
+        if self.type == 'real':
+            print( '--- real' )
+            freq = fvar.R@fvar.F/np.sum( fvar.R, axis=1 )
+            period = 2*np.pi/freq
+
+            A = fvar.R@fvar.A.T/np.sum( fvar.R, axis=1 )
+            B = fvar.R@fvar.B.T/np.sum( fvar.R, axis=1 )
+            C = np.sqrt( A**2 + B**2 )
+            ampl = 2*np.pi/np.arccos( A/C )
+
+            wave = CharacteristicWave( ampl, freq, period )
+
+        elif self.type == 'complex':
+            print( '--- complex' )
+            F = np.hstack( (-fvar.F, fvar.F) )
+
+            print( F.shape, fvar.R.shape )
+            freq = fvar.R@F/np.sum( fvar.R, axis=1 )
+            period = 2*np.pi/freq
+
+            wave = CharacteristicWave( 1, freq, period )
+
+        return wave
