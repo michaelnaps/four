@@ -5,6 +5,9 @@ def conjugate(X):
     return np.real( X ) - np.imag( X )*1j
 
 def complexcentroid(cvar):
+    assert isinstance( cvar, ComplexFourier ), \
+        'ERROR: Incorrect variable type given to complexcentroid().'
+
     # Perform power spectrum calculations if neccesary.
     if cvar.R is None:
         cvar.powerspec()
@@ -12,8 +15,8 @@ def complexcentroid(cvar):
     # Get parameters from series variable.
     N = cvar.N
     C = cvar.C
-    w = cvar.w[N-1:]
-    R = cvar.R[:,N-1:]
+    w = cvar.w[N:]
+    R = cvar.R[:,N:]
 
     freq = R@w/np.sum( R, axis=1 )
     period = 2*np.pi/freq

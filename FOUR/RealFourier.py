@@ -2,6 +2,9 @@
 from FOUR.Transforms import *
 
 def realcentroid(fvar):
+    assert isinstance( fvar, RealFourier ), \
+        'ERROR: Incorrect variable type given to realcentroid().'
+
     # Perform power spectrum calculations if neccesary.
     if fvar.R is None:
         fvar.powerspec()

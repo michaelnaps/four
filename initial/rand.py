@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     fig2, axs2 = plt.subplots()
     axs2.plot( fvar.w, fvar.R.T, linestyle='--', label='real' )
-    axs2.plot( cvar.w[cvar.N-1:], cvar.R.T[cvar.N-1:], linestyle=':', label='complex' )
+    axs2.plot( cvar.w[cvar.N:], cvar.R.T[cvar.N:], linestyle=':', label='complex' )
     axs2.legend()
 
     plt.show()
