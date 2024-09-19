@@ -13,9 +13,9 @@ def complexmaximum(cvar):
     Cmax = cvar.C[:,cvar.sort[:,-1]]
     ampl = np.real( (Cmax*conjugate( Cmax ))**(1/2) )
     freq = cvar.w[cvar.sort[:,-1]]
-    period = 2*np.pi/freq
+    phase = 0
 
-    return CharacteristicWave( ampl, freq, period )
+    return CharacteristicWave( ampl, freq, phase )
 
 def complexcentroid(cvar):
     assert isinstance( cvar, ComplexFourier ), \
@@ -32,9 +32,9 @@ def complexcentroid(cvar):
     R = cvar.R[:,N:]
 
     freq = R@w/np.sum( R, axis=1 )
-    period = 2*np.pi/freq
+    phase = 0
 
-    return CharacteristicWave( 1, freq, period )
+    return CharacteristicWave( 1, freq, phase )
 
 # Class: ComplexFourier()
 class ComplexFourier(Transform):

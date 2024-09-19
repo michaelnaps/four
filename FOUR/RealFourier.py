@@ -13,11 +13,9 @@ def realmaximum(fvar):
 
     ampl = np.sqrt( Amax**2 + Bmax**2 )
     freq = fvar.w[fvar.sort[:,-1]]
-    period = 2*np.pi/freq
+    phase = 2*np.pi/np.arccos( Amax/ampl )
 
-    print( ampl, freq, period )
-
-    return CharacteristicWave( ampl, freq, period )
+    return CharacteristicWave( ampl, freq, phase )
 
 def realcentroid(fvar):
     assert isinstance( fvar, RealFourier ), \
