@@ -1,29 +1,40 @@
 
 from FOUR.Transforms import *
 
+def conjugate(X):
+    return np.real( X ) - np.imag( X )*1j
+
 # Class: ComplexFourier()
 class ComplexFourier(Transform):
     def __init__(self, T, X, N=None, dt=None):
         # Intialize coefficient matrices to None.
         self.Cn = None   # Complex coefficients (negative).
         self.Cp = None   # Complex coefficients (positive).
-        self.P = None    # Power spectrum split by p/n coefficients.
 
         # Initialize Transform() as parent class.
         Transform.__init__( self, T, X, N=N, dt=dt )
 
-    # Default print function.
-    def __str__(self):
-        assert self.Cn is not None or self.Cp is not None, \
-            "\nERROR: ComplexFourier.C has not been set...\n"
-        line1 = 'Error: %.5e\n' % (-1 if self.err is None else self.err)
-        line2 = '\tC.shape: (' + str(self.C.shape[0]) + ', ' + str(self.C.shape[1]) + ')\n'
-        return line1 + line2
+    @property
+    def check(self):
+        assert self.Cn is not None and self.Cp is not None, \
+            'ComplexFourier.C has not been set...'
+        return True
 
     @property
     def C(self):
         # Return cumulative coefficient list.
-        return np.hstack( (self.Cn, self.Cp) )
+        return np.hstack( (self.Cn[:,::-1], self.Cp) )
+
+    @property
+    def w(self):
+        return np.vstack( (-self.F[::-1], self.F) )
+
+    # Default print function.
+    def __str__(self):
+        self.check
+        line1 = 'Error: %.5e\n' % (-1 if self.err is None else self.err)
+        line2 = '\tC.shape: (' + str(self.C.shape[0]) + ', ' + str(self.C.shape[1]) + ')\n'
+        return line1 + line2
 
     def serialize(self, T=None):
         # If data set is given use instead of 'default'.
@@ -36,13 +47,6 @@ class ComplexFourier(Transform):
 
         # Return the serialized sets.
         return tExpN, tExpP
-
-    def powerspec(self):
-        self.P = 1/self.N*np.array( [self.Cn, self.Cp] )**2
-        self.R = np.hstack( self.P )
-
-        # Return instance of self.
-        return self
 
     def dft(self, verbose=0):
         # Check that system is single input.
@@ -72,8 +76,7 @@ class ComplexFourier(Transform):
         self.Cp[:,1:] = conjugate( self.Cn )[:,1:]
 
         # # Return instance of self.
-        self.powerspec()
-        # self.resError( self.T, self.X, save=1 )
+        self.resError( self.T, self.X, save=1 )
         return self
 
     def solve(self, T=None):
@@ -86,6 +89,18 @@ class ComplexFourier(Transform):
         # Return approximation from coefficient matrices.
         Y = self.Cn@tExpN + self.Cp@tExpP
         return Y
+
+    def powerspec(self):
+        self.check
+
+        # Calculate power spectrum.
+        self.R = np.real( 1/self.N*self.C*conjugate( self.C ) )
+
+        # Create sorted list of most significant terms.
+        self.sort = np.argsort( self.R, kind='quicksort' )
+
+        # Return instance of self.
+        return self
 
     def RtoC(self, fvar):
         # Convert sin/cos series to pos/neg coefficient groups.

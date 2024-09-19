@@ -12,9 +12,6 @@ import numpy as np
 from FOUR.Preprocess import *
 from KMAN.Regressors import *
 
-def conjugate(X):
-    return np.real( X ) - np.imag( X )*1j
-
 # Class: CharacteristicWave()
 # Purpose: To be used to save the characteristic wave form found through the Transform() class.
 class CharacteristicWave:
@@ -50,8 +47,13 @@ class Transform:
         # Initialize transform variables and dimensions.
         self.T = T      # Input data.
         self.X = X      # Output data.
+
         self.F = None   # List of frequencies.
-        self.R = None   # Power spectrum values.
+        self.P = None   # Power spectrum list split by coefficient members.
+        self.R = None   # Power spectrum.
+        self.Rmax = None    # Max value from power spectrum.
+
+        # Dimensions and frequency parameter setup for the transform.
         self.K = T.shape[0]
         self.N = round( T.shape[1]/2 ) if N is None else N
         self.Nt = X.shape[0]
@@ -107,3 +109,21 @@ class Transform:
 
         # Return instance of self.
         return self
+
+    def resError(self, T=None, X=None, save=0):
+        self.check
+
+        # Initialize data matrix (default: training data).
+        T = self.T if T is None else T
+        X = self.X if X is None else X
+
+        # Solve for approximation of set.
+        Y = self.solve( T )
+
+        # Calculate residual error.
+        err = np.linalg.norm( X - Y )**2
+
+        # Save if requested and return.
+        if save:
+            self.err = err
+        return err

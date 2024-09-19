@@ -3,8 +3,8 @@ from args import *
 
 if __name__ == "__main__":
     # Generate random data set with equally spaced points.
-    Nx = 20  # Chosen arbitrarily.
-    L = 10   # Chosen arbitrarily.
+    Nx = 20   # Chosen arbitrarily.
+    L = 10    # Chosen arbitrarily.
     dx = np.random.rand()
     Xlearn = np.array( [[i*dx for i in range( Nx )]] )
     Ylearn = 2*L*np.random.rand( 1,Nx ) - L
@@ -18,15 +18,11 @@ if __name__ == "__main__":
     Yr = fvar.solve( X )
 
     # Test real -> complex function.
-    cvar = ComplexFourier( Xlearn, Ylearn ).dft()
+    cvar = ComplexFourier( Xlearn, Ylearn ).dft().powerspec()
     print( cvar )
 
     # Solve over range using complex Fourier.
     Yc = cvar.solve( X )
-    # print( Yc )
-
-    # print( Characterize( fvar=fvar ).centroidalwave() )
-    # print( Characterize( cvar=cvar ).centroidalwave() )
 
     # Plot results.
     fig, axs = plt.subplots()
@@ -36,9 +32,10 @@ if __name__ == "__main__":
     plt.legend()
     plt.grid( 1 )
 
-    # fig2, axs2 = plt.subplots()
-    # laglist, acflist = fvar.autocorrelate()
-    # axs2.plot( laglist.T, acflist.T )
-    # axs2.grid( 1 )
+    fvar.powerspec()
+
+    fig2, axs2 = plt.subplots( 2,1 )
+    axs2[0].plot( fvar.w, fvar.R.T )
+    axs2[1].plot( cvar.w, cvar.R.T )
 
     plt.show()

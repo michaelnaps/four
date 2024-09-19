@@ -8,22 +8,30 @@ class RealFourier( Transform ):
         self.A = None   # sin(t) coefficients.
         self.B = None   # cos(t) coefficients.
         self.P = None   # Power spectrum split by A/B coefficients.
-        self.Rmax = None    # Maximum spectral coefficient.
 
         # Initialize Transform() as parent class.
         Transform.__init__( self, T, X, N=N, dt=dt )
 
+    @property
+    def check(self):
+        assert self.A is not None or self.B is not None, \
+            'RealFourier.A or RealFourier.B has not been set...'
+        return True
+
+    @property
+    def w(self):
+        return self.F
+
     # Default print function.
     def __str__(self):
-        assert not (self.A is None and self.B is None), \
-            "\nERROR: RealFourier.A, or RealFourier.B has not been set...\n"
+        self.check
         line1 = 'Error: %.5e\n' % (-1 if self.err is None else self.err)
-        line2 = 'Centroid frequency: ' + str( self.Fmean.T ) + '\n'
-        line3 = 'Average period:     ' + str( self.Tmean.T ) + '\n'
+        # line2 = 'Centroid frequency: ' + str( self.Fmean.T ) + '\n'
+        # line3 = 'Average period:     ' + str( self.Tmean.T ) + '\n'
         line4 = '\tA.shape: (' + str(self.A.shape[0]) + ', ' + str(self.A.shape[1]) + ')\n'
         line5 = '\tB.shape: (' + str(self.B.shape[0]) + ', ' + str(self.B.shape[1]) + ')\n'
-        line6 = self.cwave.__str__()
-        return line1 + line2 + line3 + line4 + line5 + line6
+        # line6 = self.cwave.__str__()
+        return line1 + line4 + line5
 
     def serialize(self, T=None):
         # If data set is given use instead of 'default'.
@@ -36,28 +44,6 @@ class RealFourier( Transform ):
 
         # Return the serialized sets.
         return tSin, tCos
-
-    def powerspec(self):
-        # Quit if coefficients are not set.
-        assert self.A is not None or self.B is not None, \
-            "\nERROR: RealFourier.A, or RealFourier.B has not been set...\n"
-
-        # Calculate power series from sin and cos functions.
-        self.P = 1/(4*(self.N + 1))*np.array( [self.A**2, self.B**2] )
-
-        # Divide all coefficients by maximum and sub for power spectrum.
-        self.R = np.sum( self.P, axis=0 )
-        self.Rmax = np.max( self.R )
-
-        # Normalize components to power spectrum.
-        self.R = self.R/self.Rmax
-        self.P = self.P/self.Rmax
-
-        # Create sorted list of most significant coefficient terms.
-        self.sort = np.argsort( self.R, kind='quicksort' )
-
-        # Return instance of self.
-        return self
 
     def dft(self, verbose=0):
         # Check that system is single input.
@@ -94,8 +80,6 @@ class RealFourier( Transform ):
             self.B[i,self.N] = 1/(2*self.N)*np.sum( self.X[i,:]*tCos[self.N,:] )
 
         # Return instance of self.
-        self.powerspec()
-        self.centroidfreq()
         self.resError( self.T, self.X, save=1 )
         return self
 
@@ -141,7 +125,8 @@ class RealFourier( Transform ):
         return llist, flist
 
     def vectors(self, t):
-        # Check that system is single input.
+        # Check that system is solved and single input.
+        self.check
         assert self.K == 1, \
             "\nERROR: RealFourier.vectors() requires that system be single input.\n"
 
@@ -187,25 +172,25 @@ class RealFourier( Transform ):
         # return Y
         return self.A@tSin + self.B@tCos
 
-    def resError(self, T=None, X=None, save=0):
-        # Quit if coefficients are not set.
-        assert self.A is not None or self.B is not None, \
-            "\nERROR: RealFourier.A, or RealFourier.B has not been set...\n"
+    def powerspec(self):
+        self.check
 
-        # Initialize data matrix (default: training data).
-        T = self.T if T is None else T
-        X = self.X if X is None else X
+        # Calculate power series from sin and cos functions.
+        self.P = 1/(4*(self.N + 1))*np.array( [self.A**2, self.B**2] )
 
-        # Solve for approximation of set.
-        Y = self.solve( T )
+        # Divide all coefficients by maximum and sub for power spectrum.
+        self.R = np.sum( self.P, axis=0 )
+        self.Rmax = np.max( self.R )
 
-        # Calculate residual error.
-        err = np.linalg.norm( X - Y )**2
+        # Normalize components to power spectrum.
+        self.R = self.R/self.Rmax
+        self.P = self.P/self.Rmax
 
-        # Save if requested and return.
-        if save:
-            self.err = err
-        return err
+        # Create sorted list of most significant coefficient terms.
+        self.sort = np.argsort( self.R, kind='quicksort' )
+
+        # Return instance of self.
+        return self
 
     def CtoR(self, cvar):
         self.A = np.imag( cvar.Cn - cvar.Cp )
