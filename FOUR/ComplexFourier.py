@@ -4,6 +4,19 @@ from FOUR.Transforms import *
 def conjugate(X):
     return np.real( X ) - np.imag( X )*1j
 
+def complexmaximum(cvar):
+    # Perform power spectrum calculations if necessary.
+    if cvar.R is None:
+        cvar.powerspec()
+
+    # Get parameters from series variable.
+    Cmax = cvar.C[:,cvar.sort[:,-1]]
+    ampl = np.real( (Cmax*conjugate( Cmax ))**(1/2) )
+    freq = cvar.w[cvar.sort[:,-1]]
+    period = 2*np.pi/freq
+
+    return CharacteristicWave( ampl, freq, period )
+
 def complexcentroid(cvar):
     assert isinstance( cvar, ComplexFourier ), \
         'ERROR: Incorrect variable type given to complexcentroid().'

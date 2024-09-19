@@ -1,6 +1,24 @@
 
 from FOUR.Transforms import *
 
+def realmaximum(fvar):
+    # Perform power spectrum calculations if necessary.
+    if fvar.R is None:
+        fvar.powerspec()
+
+    # Get parameters from series variable.
+    print( fvar.A.shape, fvar.B.shape )
+    Amax = fvar.A[:,fvar.sort[:,-1]]
+    Bmax = fvar.B[:,fvar.sort[:,-1]]
+
+    ampl = np.sqrt( Amax**2 + Bmax**2 )
+    freq = fvar.w[fvar.sort[:,-1]]
+    period = 2*np.pi/freq
+
+    print( ampl, freq, period )
+
+    return CharacteristicWave( ampl, freq, period )
+
 def realcentroid(fvar):
     assert isinstance( fvar, RealFourier ), \
         'ERROR: Incorrect variable type given to realcentroid().'

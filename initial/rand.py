@@ -13,14 +13,14 @@ if __name__ == "__main__":
     fvar = RealFourier( Xlearn, Ylearn ).dft()
     print( fvar )
 
-    fwave = realcentroid( fvar )
+    fwave = realmaximum( fvar )
     print( fwave )
 
     # Test real -> complex function.
     cvar = ComplexFourier( Xlearn, Ylearn ).dft().powerspec()
     print( cvar )
 
-    cwave = complexcentroid( cvar )
+    cwave = complexmaximum( cvar )
     print( cwave )
 
     # Solve over range using Fourier series.
