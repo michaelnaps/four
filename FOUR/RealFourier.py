@@ -1,6 +1,30 @@
 
 from FOUR.Transforms import *
 
+def realcentroid(fvar):
+    # Perform power spectrum calculations if neccesary.
+    if fvar.R is None:
+        fvar.powerspec()
+
+    # Get parameters from series variable.
+    A = fvar.A
+    B = fvar.B
+    w = fvar.w
+    R = fvar.R
+
+    # Calculate centroid frequency from power spectrum.
+    freq = R@w/np.sum( R, axis=1 )
+    period = 2*np.pi/freq
+
+    a = R@A.T/np.sum( R, axis=1 )
+    b = R@B.T/np.sum( R, axis=1 )
+    c = np.sqrt( a**2 + b**2 )
+    ampl = 2*np.pi/np.arccos( a/c )
+
+    wave = CharacteristicWave( ampl, freq, period )
+
+    return wave
+
 # Class: RealFourier()
 class RealFourier( Transform ):
     def __init__(self, T, X, N=None, dt=None):
@@ -15,7 +39,7 @@ class RealFourier( Transform ):
     @property
     def check(self):
         assert self.A is not None or self.B is not None, \
-            'RealFourier.A or RealFourier.B has not been set...'
+            'RealFourier.A or RealFourier.B has not been set.'
         return True
 
     @property
@@ -29,7 +53,7 @@ class RealFourier( Transform ):
         # line2 = 'Centroid frequency: ' + str( self.Fmean.T ) + '\n'
         # line3 = 'Average period:     ' + str( self.Tmean.T ) + '\n'
         line4 = '\tA.shape: (' + str(self.A.shape[0]) + ', ' + str(self.A.shape[1]) + ')\n'
-        line5 = '\tB.shape: (' + str(self.B.shape[0]) + ', ' + str(self.B.shape[1]) + ')\n'
+        line5 = '\tB.shape: (' + str(self.B.shape[0]) + ', ' + str(self.B.shape[1]) + ')'
         # line6 = self.cwave.__str__()
         return line1 + line4 + line5
 
@@ -198,38 +222,3 @@ class RealFourier( Transform ):
 
         # Return instance of self.
         return self
-
-class Characterize:
-    def __init__(self, fvar=None, cvar=None):
-        # Check and save Fourier variable and type.
-        assert not (fvar is None and cvar is None), \
-            'ERROR: Characterize class requires RealFourier() or ComplexFourier() variables.'
-        self.fvar = cvar if fvar is None else fvar
-        self.type = 'complex' if fvar is None else 'real'
-
-    def centroidalwave(self):
-        fvar = self.fvar
-
-        if self.type == 'real':
-            print( '--- real' )
-            freq = fvar.R@fvar.F/np.sum( fvar.R, axis=1 )
-            period = 2*np.pi/freq
-
-            A = fvar.R@fvar.A.T/np.sum( fvar.R, axis=1 )
-            B = fvar.R@fvar.B.T/np.sum( fvar.R, axis=1 )
-            C = np.sqrt( A**2 + B**2 )
-            ampl = 2*np.pi/np.arccos( A/C )
-
-            wave = CharacteristicWave( ampl, freq, period )
-
-        elif self.type == 'complex':
-            print( '--- complex' )
-            F = np.hstack( (-fvar.F, fvar.F) )
-
-            print( F.shape, fvar.R.shape )
-            freq = fvar.R@F/np.sum( fvar.R, axis=1 )
-            period = 2*np.pi/freq
-
-            wave = CharacteristicWave( 1, freq, period )
-
-        return wave

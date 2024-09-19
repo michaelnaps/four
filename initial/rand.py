@@ -12,6 +12,7 @@ if __name__ == "__main__":
     # Results from class solver.
     fvar = RealFourier( Xlearn, Ylearn ).dft()
     print( fvar )
+    print( realcentroid( fvar ) )
 
     # Solve over range using real Fourier.
     X = np.linspace( 0, dx*(Nx - 1), 1000 )[None]
@@ -20,22 +21,22 @@ if __name__ == "__main__":
     # Test real -> complex function.
     cvar = ComplexFourier( Xlearn, Ylearn ).dft().powerspec()
     print( cvar )
+    print( complexcentroid( cvar ) )
 
     # Solve over range using complex Fourier.
     Yc = cvar.solve( X )
 
     # Plot results.
-    fig, axs = plt.subplots()
-    plt.plot( Xlearn.T, Ylearn.T, marker='o', label='true' )
-    plt.plot( X.T, Yr.T, linestyle='--', label='real' )
-    plt.plot( X.T, np.real( Yc.T ), linestyle=':', label='complex' )
-    plt.legend()
-    plt.grid( 1 )
+    fig1, axs1 = plt.subplots()
+    axs1.plot( Xlearn.T, Ylearn.T, marker='o', label='true' )
+    axs1.plot( X.T, Yr.T, linestyle='--', label='real' )
+    axs1.plot( X.T, np.real( Yc.T ), linestyle=':', label='complex' )
+    axs1.legend()
+    axs1.grid( 1 )
 
-    fvar.powerspec()
-
-    fig2, axs2 = plt.subplots( 2,1 )
-    axs2[0].plot( fvar.w, fvar.R.T )
-    axs2[1].plot( cvar.w, cvar.R.T )
+    fig2, axs2 = plt.subplots()
+    axs2.plot( fvar.w, fvar.R.T, linestyle='--', label='real' )
+    axs2.plot( cvar.w[cvar.N-1:], cvar.R.T[cvar.N-1:], linestyle=':', label='complex' )
+    axs2.legend()
 
     plt.show()
