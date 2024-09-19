@@ -21,6 +21,10 @@ class CharacteristicWave:
         self.freq = freq
         self.phase = phase
 
+    @property
+    def period(self):
+        return 2*np.pi/self.freq
+
     def __str__(self):
         line1 = 'Characteristic wave: '
         line2 = 'x(t) = %.3f sin( %.3f t + %.3f )' % (self.ampl, self.freq, self.phase)
