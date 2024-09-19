@@ -12,25 +12,27 @@ if __name__ == "__main__":
     # Results from class solver.
     fvar = RealFourier( Xlearn, Ylearn ).dft()
     print( fvar )
-    print( realcentroid( fvar ) )
 
-    # Solve over range using real Fourier.
-    X = np.linspace( 0, dx*(Nx - 1), 1000 )[None]
-    Yr = fvar.solve( X )
+    fwave = realcentroid( fvar )
+    print( fwave )
 
     # Test real -> complex function.
     cvar = ComplexFourier( Xlearn, Ylearn ).dft().powerspec()
     print( cvar )
-    print( complexcentroid( cvar ) )
 
-    # Solve over range using complex Fourier.
-    Yc = cvar.solve( X )
+    cwave = complexcentroid( cvar )
+    print( cwave )
+
+    # Solve over range using Fourier series.
+    X = np.linspace( 0, dx*(Nx - 1), 1000 )[None]
 
     # Plot results.
     fig1, axs1 = plt.subplots()
     axs1.plot( Xlearn.T, Ylearn.T, marker='o', label='true' )
-    axs1.plot( X.T, Yr.T, linestyle='--', label='real' )
-    axs1.plot( X.T, np.real( Yc.T ), linestyle=':', label='complex' )
+    axs1.plot( X.T, fvar.solve( X ).T, linestyle='--', label='real' )
+    axs1.plot( X.T, np.real( cvar.solve( X ) ).T, linestyle=':', label='complex' )
+    # axs1.plot( X.T, fwave.solve( X ).T, label='real c. wave' )
+    # axs1.plot( X.T, cwave.solve( X ).T, label='imag c. wave' )
     axs1.legend()
     axs1.grid( 1 )
 
