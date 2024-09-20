@@ -7,12 +7,12 @@ def realiwave(fvar, i=0):
         fvar.powerspec()
 
     # Get parameters from series.
-    Amax = fvar.A[:,fvar.sort[:,i]]
-    Bmax = fvar.B[:,fvar.sort[:,i]]
-
-    ampl = np.sqrt( Amax**2 + Bmax**2 )
+    a = fvar.A[:,fvar.sort[:,i]]
+    b = fvar.B[:,fvar.sort[:,i]]
     freq = fvar.w[fvar.sort[:,i]]
-    phase = 2*np.pi/np.arccos( Amax/ampl )
+
+    ampl = np.sqrt( a**2 + b**2 )
+    phase = np.arccos( a/ampl )
 
     return CharacteristicWave( ampl, freq, phase )
 
@@ -35,14 +35,13 @@ def realcentroid(fvar):
 
     # Calculate centroid frequency from power spectrum.
     freq = R@w/np.sum( R, axis=1 )
-    period = 2*np.pi/freq
 
     a = R@A.T/np.sum( R, axis=1 )
     b = R@B.T/np.sum( R, axis=1 )
-    c = np.sqrt( a**2 + b**2 )
-    ampl = 2*np.pi/np.arccos( a/c )
+    ampl = np.sqrt( a**2 + b**2 )
+    phase = np.arccos( a/ampl )
 
-    wave = CharacteristicWave( ampl, freq, period )
+    wave = CharacteristicWave( ampl, freq, phase )
 
     return wave
 
@@ -51,17 +50,17 @@ def perturbseries(fvar, N=1, eps=0):
     if fvar.R is None:
         fvar.powerspec()
 
-    # Create series copy.
+    # Create copy of series.
     fnew = deepcopy( fvar )
 
-    # Get sort and wave list.
-    sort = fnew.sort[:,:N]
-    wavelist = [realiwave( fnew, i ) for i in range( N )]
+    # Create index list.
+    ilist = [-i for i in range( 1,N+1 )]
 
     # Iterate through wave - perturbing coefficients.
-    for i, wave in zip( sort, wavelist ):
-        fnew.A[:,i] = wave.ampl*np.cos( wave.phase + eps )
-        fnew.B[:,i] = wave.ampl*np.sin( wave.phase + eps )
+    for i in ilist:
+        wave = realiwave( fnew, i )
+        fnew.A[:,i] = wave.ampl*np.cos( wave.phase - eps )
+        fnew.B[:,i] = wave.ampl*np.sin( wave.phase - eps )
 
     fnew.resError( save=1 )
     return fnew

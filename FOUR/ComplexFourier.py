@@ -11,8 +11,8 @@ def complexmaximum(cvar):
 
     # Get parameters from series variable.
     Cmax = cvar.C[:,cvar.sort[:,-1]]
-    ampl = np.real( (Cmax*conjugate( Cmax ))**(1/2) )
-    freq = cvar.w[cvar.sort[:,-1]]
+    ampl = 2*np.real( np.sqrt( Cmax*conjugate( Cmax ) ) )
+    freq = np.abs( cvar.w[cvar.sort[:,-1]] )
     phase = 0
 
     return CharacteristicWave( ampl, freq, phase )

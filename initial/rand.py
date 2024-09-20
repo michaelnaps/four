@@ -11,20 +11,20 @@ if __name__ == "__main__":
 
     # Results from class solver.
     fvar = RealFourier( Xlearn, Ylearn ).dft()
-    print( fvar )
-
-    # Perturb Fourier series variable.
-    fnew = perturbseries( fvar, eps=1e-3 )
-    print( fnew )
-
     fwave = realmaximum( fvar )
+    print( fvar )
     print( fwave )
 
-    # Test real -> complex function.
-    cvar = ComplexFourier( Xlearn, Ylearn ).dft().powerspec()
-    print( cvar )
+    # Perturb Fourier series variable.
+    fnew = perturbseries( fvar, eps=1 )
+    nwave = realmaximum( fnew )
+    print( fnew )
+    print( nwave )
 
+    # Test real -> complex function.
+    cvar = ComplexFourier( Xlearn, Ylearn ).dft()
     cwave = complexmaximum( cvar )
+    print( cvar )
     print( cwave )
 
     # Solve over range using Fourier series.
