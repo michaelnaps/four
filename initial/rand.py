@@ -13,6 +13,10 @@ if __name__ == "__main__":
     fvar = RealFourier( Xlearn, Ylearn ).dft()
     print( fvar )
 
+    # Perturb Fourier series variable.
+    fnew = perturbseries( fvar, eps=1e-3 )
+    print( fnew )
+
     fwave = realmaximum( fvar )
     print( fwave )
 
@@ -29,7 +33,7 @@ if __name__ == "__main__":
     # Plot results.
     fig1, axs1 = plt.subplots()
     axs1.plot( Xlearn.T, Ylearn.T, marker='o', label='true' )
-    axs1.plot( X.T, fvar.solve( X ).T, linestyle='--', label='real' )
+    axs1.plot( X.T, fnew.solve( X ).T, linestyle='--', label='real' )
     axs1.plot( X.T, np.real( cvar.solve( X ) ).T, linestyle=':', label='complex' )
     # axs1.plot( X.T, fwave.solve( X ).T, label='real c. wave' )
     # axs1.plot( X.T, cwave.solve( X ).T, label='imag c. wave' )
