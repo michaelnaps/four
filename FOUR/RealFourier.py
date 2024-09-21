@@ -12,7 +12,7 @@ def realiwave(fvar, i=0):
     freq = fvar.w[fvar.sort[:,i]]
 
     ampl = np.sqrt( a**2 + b**2 )
-    phase = np.arccos( a/ampl )
+    phase = np.arcsin( a/ampl )
 
     return CharacteristicWave( ampl, freq, phase )
 
@@ -45,7 +45,7 @@ def realcentroid(fvar):
 
     return wave
 
-def perturbseries(fvar, N=1, eps=0):
+def perturbseries(fvar, imin=0, imax=1, eps=0):
     # Perform power spectrum calculations if necessary.
     if fvar.R is None:
         fvar.powerspec()
@@ -54,13 +54,14 @@ def perturbseries(fvar, N=1, eps=0):
     fnew = deepcopy( fvar )
 
     # Create index list.
-    ilist = [-i for i in range( 1,N+1 )]
+    ilist = [-(i + 1) for i in range( imin, imax )]
+    # ilist = [i for i in range( N )]
 
     # Iterate through wave - perturbing coefficients.
     for i in ilist:
-        wave = realiwave( fnew, i )
-        fnew.A[:,i] = wave.ampl*np.cos( wave.phase - eps )
-        fnew.B[:,i] = wave.ampl*np.sin( wave.phase - eps )
+        wave = realiwave( fnew, i );  j = fvar.sort[:,i]
+        fnew.A[:,j] = wave.ampl*np.cos( np.pi/2 - (wave.phase + eps) )
+        fnew.B[:,j] = wave.ampl*np.sin( np.pi/2 - (wave.phase + eps) )
 
     fnew.resError( save=1 )
     return fnew
@@ -96,6 +97,26 @@ class RealFourier( Transform ):
         line5 = '\tB.shape: (' + str(self.B.shape[0]) + ', ' + str(self.B.shape[1]) + ')'
         # line6 = self.cwave.__str__()
         return line1 + line4 + line5
+
+    def __deepcopy__(self, memo={}):
+        # Create new copies of variable parameters.
+        T = deepcopy( self.T )
+        X = deepcopy( self.X )
+        N = deepcopy( self.N )
+        dt = deepcopy( self.dt )
+
+        # Initialize new variable using copied parameters.
+        fnew = RealFourier( T, X, N=N, dt=dt )
+
+        # Set series coefficients and power spectrum.
+        fnew.A = deepcopy( self.A )
+        fnew.B = deepcopy( self.B )
+        fnew.P = deepcopy( self.P )
+        fnew.F = deepcopy( self.F )
+        fnew.sort = deepcopy( self.sort )
+
+        # Return new copy...
+        return fnew
 
     def serialize(self, T=None):
         # If data set is given use instead of 'default'.
@@ -229,7 +250,7 @@ class RealFourier( Transform ):
         # Get serialized form of data set.
         tSin, tCos = self.serialize( T )
 
-        # Return approximation from coefficient matrices.
+        # # Return approximation from coefficient matrices.
         # Y = np.empty( (self.Nt, T.shape[1]) )
         # for i, isort in enumerate( self.sort ):
         #     Y[i] = self.A[i,isort[-N:]]@tSin[isort[-N:]] + self.B[i,isort[-N:]]@tCos[isort[-N:]]

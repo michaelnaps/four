@@ -65,16 +65,17 @@ class Transform:
         self.dt = self.T[0,1] - self.T[0,0] if dt is None else dt
         self.tau = 2*self.N*self.dt
         self.err = None
+        self.sort = np.array( [np.arange( 0, self.N+1 ) for _ in range( self.K )] )
 
-        # Values from spectral analysis.
-        self.Fmax = None
-        self.Fmean = None
-        self.Tmax = None
-        self.Tmean = None
+        # # Values from spectral analysis.
+        # self.Fmax = None
+        # self.Fmean = None
+        # self.Tmax = None
+        # self.Tmean = None
 
-        # Initialize parent class.
-        self.cwave = CharacteristicWave()
-        self.cmean = CharacteristicWave()
+        # # Initialize parent class.
+        # self.cwave = CharacteristicWave()
+        # self.cmean = CharacteristicWave()
 
     def setDataSets(self, T, X):
         self.__init__( T, X )
