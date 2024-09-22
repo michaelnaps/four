@@ -12,7 +12,7 @@ def realiwave(fvar, i=0):
     freq = fvar.w[fvar.sort[:,i]]
 
     ampl = np.sqrt( a**2 + b**2 )
-    phase = np.arcsin( a/ampl )
+    phase = np.arccos( a/ampl )
 
     return CharacteristicWave( ampl, freq, phase )
 
@@ -57,13 +57,12 @@ def perturbseries(fvar, imin=0, imax=1, eps=0):
 
     # Create index list.
     ilist = [-(i + 1) for i in range( imin, imax )]
-    # ilist = [i for i in range( N )]
 
     # Iterate through wave - perturbing coefficients.
     for i in ilist:
         wave = realiwave( fnew, i );  j = fvar.sort[:,i]
-        fnew.A[:,j] = wave.ampl*np.cos( np.pi/2 - (wave.phase + eps) )
-        fnew.B[:,j] = wave.ampl*np.sin( np.pi/2 - (wave.phase + eps) )
+        fnew.A[:,j] = wave.ampl*np.cos( -(wave.phase + eps) )
+        fnew.B[:,j] = wave.ampl*np.sin( -(wave.phase + eps) )
 
     fnew.resError( save=1 )
     return fnew
