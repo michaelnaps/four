@@ -186,8 +186,6 @@ class RealFourier( Transform ):
         self.B = C[:,self.K*(self.N+1):]
 
         # Return instance of self.
-        self.powerspec()
-        self.centroidfreq()
         self.resError( self.T, self.X, save=1 )
         return self
 

@@ -67,16 +67,6 @@ class Transform:
         self.err = None
         self.sort = np.array( [np.arange( 0, self.N+1 ) for _ in range( self.K )] )
 
-        # # Values from spectral analysis.
-        # self.Fmax = None
-        # self.Fmean = None
-        # self.Tmax = None
-        # self.Tmean = None
-
-        # # Initialize parent class.
-        # self.cwave = CharacteristicWave()
-        # self.cmean = CharacteristicWave()
-
     def setDataSets(self, T, X):
         self.__init__( T, X )
         # Return instance of self.
@@ -90,28 +80,6 @@ class Transform:
     def frequencies(self):
         # Generate frequency list.
         self.F = 2*np.pi/self.tau*np.arange( self.K*(self.N + 1) )[:,None]
-
-        # Return instance of self.
-        return self
-
-    def centroidfreq(self, P=None):
-        assert not (self.F is None and self.R is None), \
-            "\nERROR: Either Transform.F or Transform.R have not been set.\n"
-
-        self.Fmax = self.F[self.sort[:,-1]]
-        self.Tmax = 2*np.pi/self.Fmax
-        Cmax = np.sqrt( self.A[:,self.sort[0,-1]]**2 + self.B[:,self.sort[0,-1]]**2 )
-        pmax = 2*np.pi/np.arccos( self.A[:,self.sort[0,-1]]/Cmax )
-        self.cwave.setCharacteristics( Cmax, self.Fmax, pmax )
-
-        # Mean characteristic wave.
-        self.Fmean = self.R@self.F/np.sum( self.R, axis=1 )
-        self.Tmean = 2*np.pi/self.Fmean
-        Amean = self.R@self.A.T/np.sum( self.R, axis=1 )
-        Bmean = self.R@self.B.T/np.sum( self.R, axis=1 )
-        Cmean = np.sqrt( Amean**2 + Bmean**2 )
-        pmean = 2*np.pi/np.arccos( Amean/Cmean )
-        self.cmean.setCharacteristics( Cmean, self.Fmean, pmean )
 
         # Return instance of self.
         return self
