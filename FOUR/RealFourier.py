@@ -45,6 +45,12 @@ def realcentroid(fvar):
 
     return wave
 
+def phasedistr(fvar):
+    plist = np.empty( (fvar.K, fvar.N + 1) )
+    for i in range( fvar.N + 1 ):
+        plist[:,i] = realiwave( fvar, i=i ).phase
+    return plist
+
 def perturbseries(fvar, imin=0, imax=1, eps=0):
     imax = imax if imin < imax else imin + 1
 
@@ -61,8 +67,8 @@ def perturbseries(fvar, imin=0, imax=1, eps=0):
     # Iterate through wave - perturbing coefficients.
     for i in ilist:
         wave = realiwave( fnew, i );  j = fvar.sort[:,i]
-        fnew.A[:,j] = wave.ampl*np.cos( -(wave.phase + eps) )
-        fnew.B[:,j] = wave.ampl*np.sin( -(wave.phase + eps) )
+        fnew.A[:,j] = wave.ampl*np.cos( wave.phase + eps )
+        fnew.B[:,j] = wave.ampl*np.sin( wave.phase + eps )
 
     fnew.resError( save=1 )
     return fnew
