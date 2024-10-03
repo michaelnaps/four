@@ -13,6 +13,7 @@ def realiwave(fvar, i=0):
 
     ampl = np.sqrt( a**2 + b**2 )
     phase = np.arcsin( b/ampl )
+    # phase = np.arctan( a/b )
 
     return CharacteristicWave( ampl, freq, phase )
 
@@ -40,6 +41,7 @@ def realcentroid(fvar):
     b = R@B.T/np.sum( R, axis=1 )
     ampl = np.sqrt( a**2 + b**2 )
     phase = np.arcsin( b/ampl )
+    # phase = np.arctan( a/b )
 
     wave = CharacteristicWave( ampl, freq, phase )
 
