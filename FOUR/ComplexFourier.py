@@ -4,6 +4,15 @@ from FOUR.Transforms import *
 def conjugate(X):
     return np.real( X ) - np.imag( X )*1j
 
+def complexiwave(cvar, i=0):
+    # Perform power spectrum calculations if necessary.
+    if cvar.R is None:
+        cvar.powerspec()
+
+    # Get parameters from series.
+    cn = cvar.Cn[:,cvar.sort[:,i]]
+    cp = cvar.Cp[:,cvar.sort[:,i]]
+
 def complexmaximum(cvar):
     # Perform power spectrum calculations if necessary.
     if cvar.R is None:

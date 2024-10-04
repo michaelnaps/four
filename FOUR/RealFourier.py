@@ -13,7 +13,7 @@ def realiwave(fvar, i=0):
 
     ampl = np.sqrt( a**2 + b**2 )
     phase = np.arcsin( b/ampl )
-    # phase = np.arctan( a/b )
+    # phase = np.arctan( b/a )
 
     return CharacteristicWave( ampl, freq, phase )
 
@@ -64,19 +64,19 @@ def perturbseries(fvar, imin=0, imax=1, eps=0):
         fvar.powerspec()
 
     # Create copy of series.
-    fnew = deepcopy( fvar )
+    fptb = deepcopy( fvar )
 
     # Create index list.
     ilist = [-(i + 1) for i in range( imin, imax )]
 
     # Iterate through wave - perturbing coefficients.
     for i in ilist:
-        wave = realiwave( fnew, i );  j = fvar.sort[:,i]
-        fnew.A[:,j] = wave.ampl*np.cos( wave.phase + eps )
-        fnew.B[:,j] = wave.ampl*np.sin( wave.phase + eps )
+        wave = realiwave( fptb, i );  j = fvar.sort[:,i]
+        fptb.A[:,j] = np.sign( fvar.A[:,j] )*wave.ampl*np.cos( wave.phase + wave.freq*eps )
+        fptb.B[:,j] = wave.ampl*np.sin( wave.phase + wave.freq*eps )
 
-    fnew.resError( save=1 )
-    return fnew
+    fptb.resError( save=1 )
+    return fptb
 
 # Class: RealFourier()
 class RealFourier( Transform ):
