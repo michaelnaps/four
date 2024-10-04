@@ -57,7 +57,7 @@ def phasedistr(fvar):
     return plist
 
 def perturbseries(fvar, imin=0, imax=1, eps=0):
-    imax = imax if imin < imax else imin + 1
+    imax = min( imax, fvar.N + 1 ) if imin < imax else imin + 1
 
     # Perform power spectrum calculations if necessary.
     if fvar.R is None:
