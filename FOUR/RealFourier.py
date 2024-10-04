@@ -40,8 +40,11 @@ def realcentroid(fvar):
     a = R@A.T/np.sum( R, axis=1 )
     b = R@B.T/np.sum( R, axis=1 )
     ampl = np.sqrt( a**2 + b**2 )
-    phase = np.arcsin( b/ampl )
-    # phase = np.arctan( a/b )
+
+    # Get weighted phase.
+    phase = R@np.arcsin( B.T/np.sqrt( A.T**2 + B.T**2 ) )/np.sum( R, axis=1 )
+    # plist = R@np.arctan( A.T/B.T )/np.sum( R, axis=1 )
+    # phase = np.arcsin( b/ampl )
 
     wave = CharacteristicWave( ampl, freq, phase )
 
