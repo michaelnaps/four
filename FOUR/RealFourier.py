@@ -72,8 +72,8 @@ def perturbseries(fvar, imin=0, imax=1, eps=0):
     # Iterate through wave - perturbing coefficients.
     for i in ilist:
         wave = realiwave( fptb, i );  j = fvar.sort[:,i]
-        fptb.A[:,j] = np.sign( fvar.A[:,j] )*wave.ampl*np.cos( wave.phase + wave.freq*eps )
-        fptb.B[:,j] = wave.ampl*np.sin( wave.phase + wave.freq*eps )
+        fptb.A[:,j] = wave.ampl*np.cos( (wave.phase + wave.freq*eps) )
+        fptb.B[:,j] = wave.ampl*np.sin( (wave.phase + wave.freq*eps) )
 
     fptb.resError( save=1 )
     return fptb
