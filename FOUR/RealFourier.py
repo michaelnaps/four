@@ -12,7 +12,7 @@ def realiwave(fvar, i=0):
     freq = fvar.w[fvar.sort[:,i]]
 
     ampl = np.sqrt( a**2 + b**2 )
-    phase = np.arcsin( b/ampl )
+    phase = np.arccos( a/ampl )
     # phase = np.arctan( b/a )
 
     return CharacteristicWave( ampl, freq, phase )
@@ -42,9 +42,8 @@ def realcentroid(fvar):
     ampl = np.sqrt( a**2 + b**2 )
 
     # Get weighted phase.
-    phase = R@np.arcsin( B.T/np.sqrt( A.T**2 + B.T**2 ) )/np.sum( R, axis=1 )
+    phase = R@np.arccos( A.T/np.sqrt( A.T**2 + B.T**2 ) )/np.sum( R, axis=1 )
     # plist = R@np.arctan( A.T/B.T )/np.sum( R, axis=1 )
-    # phase = np.arcsin( b/ampl )
 
     wave = CharacteristicWave( ampl, freq, phase )
 
@@ -72,8 +71,8 @@ def perturbseries(fvar, imin=0, imax=1, eps=0):
     # Iterate through wave - perturbing coefficients.
     for i in ilist:
         wave = realiwave( fptb, i );  j = fvar.sort[:,i]
-        fptb.A[:,j] = wave.ampl*np.cos( (wave.phase + wave.freq*eps) )
-        fptb.B[:,j] = wave.ampl*np.sin( (wave.phase + wave.freq*eps) )
+        fptb.A[:,j] = wave.ampl*np.cos( wave.phase + wave.freq*eps )
+        fptb.B[:,j] = wave.ampl*np.sin( wave.phase + wave.freq*eps )
 
     fptb.resError( save=1 )
     return fptb
