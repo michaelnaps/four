@@ -1,25 +1,6 @@
 
 from FOUR.Transforms import *
 
-def realiwave(fvar, i=0):
-    # Perform power spectrum calculations if necessary.
-    if fvar.R is None:
-        fvar.powerspec()
-
-    # Get parameters from series.
-    a = fvar.A[:,fvar.sort[:,i]]
-    b = fvar.B[:,fvar.sort[:,i]]
-    freq = fvar.w[fvar.sort[:,i]]
-
-    ampl = np.sqrt( a**2 + b**2 )
-    phase = np.arccos( a/ampl )
-    # phase = np.arctan( b/a )
-
-    return CharacteristicWave( ampl, freq, phase )
-
-def realmaximum(fvar):
-    return realiwave(fvar, i=-1)
-
 def realcentroid(fvar):
     assert isinstance( fvar, RealFourier ), \
         'ERROR: Incorrect variable type given to realcentroid().'
@@ -49,6 +30,25 @@ def realcentroid(fvar):
 
     return wave
 
+def realiwave(fvar, i=0):
+    # Perform power spectrum calculations if necessary.
+    if fvar.R is None:
+        fvar.powerspec()
+
+    # Get parameters from series.
+    a = fvar.A[:,fvar.sort[:,i]]
+    b = fvar.B[:,fvar.sort[:,i]]
+    freq = fvar.w[fvar.sort[:,i]]
+
+    ampl = np.sqrt( a**2 + b**2 )
+    phase = np.arccos( a/ampl ) if ampl > 0 else np.nan
+    # phase = np.arctan( b/a )
+
+    return CharacteristicWave( ampl, freq, phase )
+
+def realmaximum(fvar):
+    return realiwave(fvar, i=-1)
+
 def phasedistr(fvar):
     plist = np.empty( (fvar.K, fvar.N + 1) )
     for i in range( fvar.N + 1 ):
@@ -73,8 +73,11 @@ def perturbseries(fvar, imin=0, imax=1, eps=0):
         wave = realiwave( fptb, i );  j = fvar.sort[:,i]
         # a = fvar.A[:,j];  aphase = np.arccos( a/wave.ampl )
         # b = fvar.B[:,j];  bphase = np.arcsin( b/wave.ampl )
-        fptb.A[:,j] = wave.ampl*np.cos( wave.phase + wave.freq*eps )
-        fptb.B[:,j] = wave.ampl*np.sin( wave.phase + wave.freq*eps )
+        if wave.phase is not np.nan:
+            fptb.A[:,j] = wave.ampl*np.cos( wave.phase + wave.freq*eps )
+            fptb.B[:,j] = wave.ampl*np.sin( wave.phase + wave.freq*eps )
+        else:
+            fptb.A[:,j] = fptb.B[:,j] = 0
 
     fptb.resError( save=1 )
     return fptb
