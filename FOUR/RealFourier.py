@@ -55,6 +55,14 @@ def phasedistr(fvar):
         plist[:,i] = realiwave( fvar, i=i ).phase
     return plist
 
+def offsetseries(fvar, phi=0):
+    fnew = deepcopy( fvar )
+    for i in range( fvar.N + 1 ):
+        a, b, w = fvar.A[:,i], fvar.B[:,i], fvar.F[i]
+        fnew.A[:,i] = a*np.cos( w*phi ) - b*np.sin( w*phi )
+        fnew.B[:,i] = a*np.sin( w*phi ) + b*np.cos( w*phi )
+    return fnew
+
 def perturbseries(fvar, imin=0, imax=1, eps=0):
     imax = min( imax, fvar.N + 1 ) if imin < imax else imin + 1
 
