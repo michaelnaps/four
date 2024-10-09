@@ -41,8 +41,8 @@ def realiwave(fvar, i=0):
     freq = fvar.w[fvar.sort[:,i]]
 
     ampl = np.sqrt( a**2 + b**2 )
-    phase = np.arccos( a/ampl ) if ampl > 0 else np.nan
-    # phase = np.arctan( b/a )
+    # phase = np.arccos( a/ampl ) if ampl > 0 else np.nan
+    phase = np.arctan( b/a ) if np.abs( a ) > 0 else np.sign( b )*np.pi/2
 
     return CharacteristicWave( ampl, freq, phase )
 
@@ -55,15 +55,7 @@ def phasedistr(fvar):
         plist[:,i] = realiwave( fvar, i=i ).phase
     return plist
 
-def offsetseries(fvar, phi=0):
-    fnew = deepcopy( fvar )
-    for i in range( fvar.N + 1 ):
-        a, b, w = fvar.A[:,i], fvar.B[:,i], fvar.F[i]
-        fnew.A[:,i] = a*np.cos( w*phi ) - b*np.sin( w*phi )
-        fnew.B[:,i] = a*np.sin( w*phi ) + b*np.cos( w*phi )
-    return fnew
-
-def perturbseries(fvar, imin=0, imax=1, eps=0):
+def perturbseries(fvar, eps=0, imin=0, imax=1):
     imax = min( imax, fvar.N + 1 ) if imin < imax else imin + 1
 
     # Perform power spectrum calculations if necessary.
@@ -77,18 +69,36 @@ def perturbseries(fvar, imin=0, imax=1, eps=0):
     ilist = [-(i + 1) for i in range( imin, imax )]
 
     # Iterate through wave - perturbing coefficients.
-    for i in ilist:
-        wave = realiwave( fptb, i );  j = fvar.sort[:,i]
-        # a = fvar.A[:,j];  aphase = np.arccos( a/wave.ampl )
-        # b = fvar.B[:,j];  bphase = np.arcsin( b/wave.ampl )
-        if wave.phase is not np.nan:
-            fptb.A[:,j] = wave.ampl*np.cos( wave.phase + wave.freq*eps )
-            fptb.B[:,j] = wave.ampl*np.sin( wave.phase + wave.freq*eps )
-        else:
-            fptb.A[:,j] = fptb.B[:,j] = 0
+    # for i in ilist:
+    #     wave = realiwave( fptb, i );  j = fvar.sort[:,i]
+    #     # a = fvar.A[:,j];  aphase = np.arccos( a/wave.ampl )
+    #     # b = fvar.B[:,j];  bphase = np.arcsin( b/wave.ampl )
+    #     if wave.phase is not np.nan:
+    #         fptb.A[:,j] = wave.ampl*np.cos( wave.phase + wave.freq*eps )
+    #         fptb.B[:,j] = wave.ampl*np.sin( wave.phase + wave.freq*eps )
+    #     else:
+    #         fptb.A[:,j] = fptb.B[:,j] = 0
 
+    for i in ilist:
+        j = fvar.sort[:,i]
+        a, b, w = fvar.A[:,j], fvar.B[:,j], fvar.F[j]
+        if np.linalg.norm( [a, b] ) == 0:
+            fptb.A[:,j] = fptb.B[:,j] = 0
+        else:
+            fptb.A[:,j] = a*np.cos( w*eps ) - b*np.sin( w*eps )
+            fptb.B[:,j] = a*np.sin( w*eps ) + b*np.cos( w*eps )
+
+    fptb.powerspec()
     fptb.resError( save=1 )
     return fptb
+
+def offsetseries(fvar, phi=0):
+    fnew = deepcopy( fvar )
+    for i in range( fvar.N + 1 ):
+        a, b, w = fvar.A[:,i], fvar.B[:,i], fvar.F[i]
+        fnew.A[:,i] = a*np.cos( w*phi ) - b*np.sin( w*phi )
+        fnew.B[:,i] = a*np.sin( w*phi ) + b*np.cos( w*phi )
+    return fnew
 
 # Class: RealFourier()
 class RealFourier( Transform ):
