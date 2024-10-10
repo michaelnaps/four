@@ -68,17 +68,6 @@ def perturbseries(fvar, eps=0, imin=0, imax=1):
     # Create index list.
     ilist = [-(i + 1) for i in range( imin, imax )]
 
-    # Iterate through wave - perturbing coefficients.
-    # for i in ilist:
-    #     wave = realiwave( fptb, i );  j = fvar.sort[:,i]
-    #     # a = fvar.A[:,j];  aphase = np.arccos( a/wave.ampl )
-    #     # b = fvar.B[:,j];  bphase = np.arcsin( b/wave.ampl )
-    #     if wave.phase is not np.nan:
-    #         fptb.A[:,j] = wave.ampl*np.cos( wave.phase + wave.freq*eps )
-    #         fptb.B[:,j] = wave.ampl*np.sin( wave.phase + wave.freq*eps )
-    #     else:
-    #         fptb.A[:,j] = fptb.B[:,j] = 0
-
     for i in ilist:
         j = fvar.sort[:,i]
         a, b, w = fvar.A[:,j], fvar.B[:,j], fvar.F[j]
@@ -93,12 +82,7 @@ def perturbseries(fvar, eps=0, imin=0, imax=1):
     return fptb
 
 def offsetseries(fvar, phi=0):
-    fnew = deepcopy( fvar )
-    for i in range( fvar.N + 1 ):
-        a, b, w = fvar.A[:,i], fvar.B[:,i], fvar.F[i]
-        fnew.A[:,i] = a*np.cos( w*phi ) - b*np.sin( w*phi )
-        fnew.B[:,i] = a*np.sin( w*phi ) + b*np.cos( w*phi )
-    return fnew
+    return perturbseries( fvar, eps=phi, imax=np.inf )
 
 # Class: RealFourier()
 class RealFourier( Transform ):
