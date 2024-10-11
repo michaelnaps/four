@@ -49,13 +49,13 @@ def realiwave(fvar, i=0, wave_type='cos'):
 
     return CharacteristicWave( ampl, freq, phase, wave_type=wave_type )
 
-def realmaximum(fvar):
-    return realiwave( fvar, i=-1, wave_type='cos' )
+def realmaximum(fvar, wave_type='cos'):
+    return realiwave( fvar, i=-1, wave_type=wave_type )
 
-def phasedistr(fvar):
+def phasedistr(fvar, wave_type='cos'):
     plist = np.empty( (fvar.K, fvar.N + 1) )
     for i in range( fvar.N + 1 ):
-        plist[:,i] = realiwave( fvar, i=i, wave_type='cos' ).phase
+        plist[:,i] = realiwave( fvar, i=i, wave_type=wave_type ).phase
     return plist
 
 def perturbseries(fvar, eps=0, imin=0, imax=1):
