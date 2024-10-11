@@ -30,7 +30,7 @@ def realcentroid(fvar):
 
     return wave
 
-def realiwave(fvar, i=0):
+def realiwave(fvar, i=0, wave_type='cos'):
     # Perform power spectrum calculations if necessary.
     if fvar.R is None:
         fvar.powerspec()
@@ -39,20 +39,23 @@ def realiwave(fvar, i=0):
     a = fvar.A[:,fvar.sort[:,i]]
     b = fvar.B[:,fvar.sort[:,i]]
     freq = fvar.w[fvar.sort[:,i]]
-
     ampl = np.sqrt( a**2 + b**2 )
-    # phase = np.arccos( a/ampl ) if ampl > 0 else np.nan
-    phase = np.arctan( b/a ) if np.abs( a ) > 0 else np.sign( b )*np.pi/2
 
-    return CharacteristicWave( ampl, freq, phase )
+    # Calculate phase based on selection of form.
+    if wave_type == 'sin':
+        phase = np.arctan( b/a ) if np.abs( a ) > 0 else np.sign( b )*np.pi/2
+    elif wave_type =='cos':
+        phase = np.arctan( -a/b ) if np.abs( b ) > 0 else np.sign( -a )*np.pi/2
+
+    return CharacteristicWave( ampl, freq, phase, wave_type=wave_type )
 
 def realmaximum(fvar):
-    return realiwave(fvar, i=-1)
+    return realiwave( fvar, i=-1, wave_type='cos' )
 
 def phasedistr(fvar):
     plist = np.empty( (fvar.K, fvar.N + 1) )
     for i in range( fvar.N + 1 ):
-        plist[:,i] = realiwave( fvar, i=i ).phase
+        plist[:,i] = realiwave( fvar, i=i, wave_type='cos' ).phase
     return plist
 
 def perturbseries(fvar, eps=0, imin=0, imax=1):

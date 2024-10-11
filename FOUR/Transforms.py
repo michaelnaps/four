@@ -16,11 +16,12 @@ from KMAN.Regressors import *
 # Class: CharacteristicWave()
 # Purpose: To be used to save the characteristic wave form found through the Transform() class.
 class CharacteristicWave:
-    def __init__(self, ampl=None, freq=None, phase=None):
+    def __init__(self, ampl=None, freq=None, phase=None, wave_type='sin'):
         # Initialize class variables.
         self.ampl = ampl
         self.freq = freq
         self.phase = phase
+        self.wave_type = wave_type
 
     @property
     def period(self):
@@ -28,7 +29,9 @@ class CharacteristicWave:
 
     def __str__(self):
         line1 = 'Characteristic wave: '
-        line2 = 'x(t) = %.3f sin( %.3f t + %.3f )' % (self.ampl, self.freq, self.phase)
+        line2 = 'x(t) = %.3f ' % self.ampl \
+            + self.wave_type \
+            + '( %.3f t + %.3f )' % (self.freq, self.phase)
         return line1 + line2
 
     def setCharacteristics(self, ampl=None, freq=None, phase=None):
