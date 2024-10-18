@@ -70,6 +70,9 @@ class Transform:
         self.err = None
         self.sort = np.array( [np.arange( 0, self.N+1 ) for _ in range( self.K )] )
 
+        # For user meta-data.
+        self.meta = None
+
     def setDataSets(self, T, X):
         self.__init__( T, X )
         # Return instance of self.
