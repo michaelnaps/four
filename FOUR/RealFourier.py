@@ -58,7 +58,7 @@ def phasedistr(fvar, wave_type='cos'):
         plist[:,i] = realiwave( fvar, i=i, wave_type=wave_type ).phase
     return plist
 
-def perturbseries(fvar, eps=0, imin=0, imax=1):
+def perturbseries(fvar, eps=0, imin=0, imax=1, unit_time=1):
     imax = min( imax, fvar.N + 1 ) if imin < imax else imin + 1
 
     # Perform power spectrum calculations if necessary.
@@ -71,9 +71,15 @@ def perturbseries(fvar, eps=0, imin=0, imax=1):
     # Create index list.
     ilist = [-(i + 1) for i in range( imin, imax )]
 
+    # Use appropriate unit.
+    if unit_time:
+        flist  = fvar.F
+    else:
+        flist = np.ones( fvar.F.shape )
+
     for i in ilist:
         j = fvar.sort[:,i]
-        a, b, w = fvar.A[:,j], fvar.B[:,j], fvar.F[j]
+        a, b, w = fvar.A[:,j], fvar.B[:,j], flist[j]
         if np.linalg.norm( [a, b] ) == 0:
             fptb.A[:,j] = fptb.B[:,j] = 0
         else:
@@ -84,8 +90,8 @@ def perturbseries(fvar, eps=0, imin=0, imax=1):
     fptb.resError( save=1 )
     return fptb
 
-def offsetseries(fvar, phi=0):
-    return perturbseries( fvar, eps=phi, imax=np.inf )
+def offsetseries(fvar, phi=0, unit_time=1):
+    return perturbseries( fvar, eps=phi, imax=np.inf, unit_time=unit_time )
 
 # Class: RealFourier()
 class RealFourier( Transform ):
