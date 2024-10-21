@@ -63,7 +63,7 @@ def phasedistr(fvar, wave_type='cos'):
         plist[:,i] = realiwave( fvar, i=i, wave_type=wave_type ).phase
     return plist
 
-def perturbseries(fvar, eps=0, imin=0, imax=1, unit_time=1):
+def perturbseries(fvar, eps, imin=0, imax=1, unit_time=1):
     imax = min( imax, fvar.N + 1 ) if imin < imax else imin + 1
 
     # Perform power spectrum calculations if necessary.
@@ -95,7 +95,7 @@ def perturbseries(fvar, eps=0, imin=0, imax=1, unit_time=1):
     fptb.resError( save=1 )
     return fptb
 
-def offsetseries(fvar, phi=0, unit_time=1):
+def offsetseries(fvar, phi, unit_time=1):
     return perturbseries( fvar, eps=phi, imax=np.inf, unit_time=unit_time )
 
 # Class: RealFourier()
