@@ -78,13 +78,13 @@ def perturbseries(fvar, eps, imin=0, imax=1, unit_time=1):
 
     # Use appropriate unit.
     if unit_time:
-        flist  = fvar.F
+        wlist  = fvar.F
     else:
-        flist = np.ones( fvar.F.shape )
+        wlist = np.ones( fvar.F.shape )
 
     for i in ilist:
         j = fvar.sort[:,i]
-        a, b, w = fvar.A[:,j], fvar.B[:,j], flist[j]
+        a, b, w = fvar.A[:,j], fvar.B[:,j], wlist[j]
         if np.linalg.norm( [a, b] ) == 0:
             fptb.A[:,j] = fptb.B[:,j] = 0
         else:
