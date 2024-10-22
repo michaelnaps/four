@@ -221,12 +221,12 @@ class RealFourier( Transform ):
         self.resError( self.T, self.X, save=1 )
         return self
 
-    def autocorrelate(self, llist=None, reverse=0):
+    def autocorrelate(self, llist=None, N=None, reverse=0):
         # Select either reverse/forward AC function.
         if reverse:
-            fauto = lambda tlist, l: (self.solve( tlist ), self.solve( l - self.T ))
+            fauto = lambda tlist, l: (self.solve( tlist, N=N ), self.solve( l - self.T, N=N ))
         else:
-            fauto = lambda tlist, l: (self.solve( tlist ), self.solve( self.T - l ))
+            fauto = lambda tlist, l: (self.solve( tlist, N=N ), self.solve( self.T - l, N=N ))
 
         # Initialize sets.
         llist = self.T if llist is None else llist
@@ -269,7 +269,7 @@ class RealFourier( Transform ):
         return V
 
     def solve(self, T=None, N=None):
-        # Truncate signal list if requested
+        # Truncate signal list if requested.
         N = self.N if N is None else N
         assert N <= self.N, \
             "\nERROR: Requested number of coefficients exceeds length of current list.\n"
