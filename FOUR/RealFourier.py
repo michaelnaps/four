@@ -6,7 +6,7 @@ def evenness(fvar):
     bsum = np.abs( np.sum( fvar.B ) )
     return bsum/(asum + bsum)
 
-def realcentroid(fvar):
+def realcentroid(fvar, wave_type='cos'):
     assert isinstance( fvar, RealFourier ), \
         'ERROR: Incorrect variable type given to realcentroid().'
 
@@ -28,8 +28,10 @@ def realcentroid(fvar):
     ampl = np.sqrt( a**2 + b**2 )
 
     # Get weighted phase.
-    phase = R@np.arccos( A.T/np.sqrt( A.T**2 + B.T**2 ) )/np.sum( R, axis=1 )
-    # plist = R@np.arctan( A.T/B.T )/np.sum( R, axis=1 )
+    if wave_type == 'sin':
+        phase = np.arctan( b/a ) if np.abs( a ) > 0 else np.sign( b )*np.pi/2
+    elif wave_type =='cos':
+        phase = np.arctan( -a/b ) if np.abs( b ) > 0 else np.sign( -a )*np.pi/2
 
     wave = CharacteristicWave( ampl, freq, phase )
 
