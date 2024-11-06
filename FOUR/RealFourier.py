@@ -49,7 +49,7 @@ def realiwave(fvar, i=0, wave_type='cos'):
     # Calculate phase based on selection of form.
     if wave_type == 'sin':
         phase = np.arctan( b/a ) if np.abs( a ) > 0 else np.sign( b )*np.pi/2
-    elif wave_type =='cos':
+    elif wave_type == 'cos':
         phase = np.arctan( -a/b ) if np.abs( b ) > 0 else np.sign( -a )*np.pi/2
 
     return CharacteristicWave( ampl, freq, phase, wave_type=wave_type )
