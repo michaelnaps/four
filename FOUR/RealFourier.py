@@ -6,7 +6,7 @@ def evenness(fvar):
     bsum = np.abs( np.sum( fvar.B ) )
     return bsum/(asum + bsum)
 
-def realcentroid(fvar):
+def realcentroid(fvar, wave_type='cos'):
     assert isinstance( fvar, RealFourier ), \
         'ERROR: Incorrect variable type given to realcentroid().'
 
@@ -28,8 +28,10 @@ def realcentroid(fvar):
     ampl = np.sqrt( a**2 + b**2 )
 
     # Get weighted phase.
-    phase = R@np.arccos( A.T/np.sqrt( A.T**2 + B.T**2 ) )/np.sum( R, axis=1 )
-    # plist = R@np.arctan( A.T/B.T )/np.sum( R, axis=1 )
+    if wave_type == 'sin':
+        phase = np.arctan( b/a ) if np.abs( a ) > 0 else np.sign( b )*np.pi/2
+    elif wave_type =='cos':
+        phase = np.arctan( -a/b ) if np.abs( b ) > 0 else np.sign( -a )*np.pi/2
 
     wave = CharacteristicWave( ampl, freq, phase )
 
@@ -221,12 +223,12 @@ class RealFourier( Transform ):
         self.resError( self.T, self.X, save=1 )
         return self
 
-    def autocorrelate(self, llist=None, reverse=0):
+    def autocorrelate(self, llist=None, N=None, reverse=0):
         # Select either reverse/forward AC function.
         if reverse:
-            fauto = lambda tlist, l: (self.solve( tlist ), self.solve( l - self.T ))
+            fauto = lambda tlist, l: (self.solve( tlist, N=N ), self.solve( l - self.T, N=N ))
         else:
-            fauto = lambda tlist, l: (self.solve( tlist ), self.solve( self.T - l ))
+            fauto = lambda tlist, l: (self.solve( tlist, N=N ), self.solve( self.T - l, N=N ))
 
         # Initialize sets.
         llist = self.T if llist is None else llist
@@ -269,7 +271,7 @@ class RealFourier( Transform ):
         return V
 
     def solve(self, T=None, N=None):
-        # Truncate signal list if requested
+        # Truncate signal list if requested.
         N = self.N if N is None else N
         assert N <= self.N, \
             "\nERROR: Requested number of coefficients exceeds length of current list.\n"
