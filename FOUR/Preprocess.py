@@ -7,7 +7,7 @@
 import numpy as np
 
 # Simple moving average function.
-def sma(T, X, W, dT=0.1):
+def sma(T, X, W, dT=0.1, giveT=1):
     # Extract bounds of the new time-series.
     MT = T.shape[0];  MX = X.shape[0]
     Tmin = np.min( T );  Tmax = np.max( T )
@@ -23,4 +23,6 @@ def sma(T, X, W, dT=0.1):
         Xm[:,k] = np.mean( X[((Tm[:,k] - W) < T) & (T < (Tm[:,k] + W))] )
 
     # Return the equally spaced, averaged data.
-    return Tm, Xm
+    if giveT:
+        return Tm, Xm
+    return Xm
