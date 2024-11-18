@@ -300,8 +300,8 @@ class RealFourier( Transform ):
         self.Rmax = np.max( self.R )
 
         # Normalize components to power spectrum.
-        self.R = self.R/self.Rmax
-        self.P = self.P/self.Rmax
+        self.R = self.R/np.sum( self.R )
+        self.P = self.P/np.sum( self.R )
 
         # Create sorted list of most significant coefficient terms.
         self.sort = np.argsort( self.R, kind='quicksort' )
