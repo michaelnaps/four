@@ -2,8 +2,8 @@
 from FOUR.Transforms import *
 
 def evenness(fvar):
-    asum = np.abs( np.sum( fvar.A ) )
-    bsum = np.abs( np.sum( fvar.B ) )
+    asum = np.sum( np.abs( fvar.A ) )
+    bsum = np.sum( np.abs( fvar.B ) )
     return bsum/(asum + bsum)
 
 def realcentroid(fvar, wave_type='cos'):
