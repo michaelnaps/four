@@ -6,6 +6,15 @@ def evenness(fvar):
     bsum = np.sum( np.abs( fvar.B ) )
     return bsum/(asum + bsum)
 
+def perturbedevenness(fvar, phi):
+    slist = np.sin( phi*fvar.w ).T
+    clist = np.cos( phi*fvar.w ).T
+
+    even = np.sum( np.abs( fvar.A*slist + fvar.B*clist ), axis=1 )
+    odd  = np.sum( np.abs( fvar.A*clist - fvar.B*slist ), axis=1 )
+
+    return even/(even + odd)
+
 def realcentroid(fvar, wave_type='cos'):
     assert isinstance( fvar, RealFourier ), \
         'ERROR: Incorrect variable type given to realcentroid().'
