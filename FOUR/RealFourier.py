@@ -291,11 +291,6 @@ class RealFourier( Transform ):
         # Get serialized form of data set.
         tSin, tCos = self.serialize( T )
 
-        # # Return approximation from coefficient matrices.
-        # Y = np.empty( (self.Nt, T.shape[1]) )
-        # for i, isort in enumerate( self.sort ):
-        #     Y[i] = self.A[i,isort[-N:]]@tSin[isort[-N:]] + self.B[i,isort[-N:]]@tCos[isort[-N:]]
-        # return Y
         return self.A@tSin + self.B@tCos
 
     def powerspec(self):
