@@ -166,8 +166,9 @@ function PowerSpectrum(F::Fourier)::PowerSpectrum
     return PowerSpectrum( F, P, R, sum( R ), i )
 end
 
-function Plots.plot!(plt::Plots.Plot, P::PowerSpectrum; args...)::Plots.Plot
-    return plot!( plt, P.F.ω, P.R/P.R̂; args... )
+function Plots.plot!(plt::Plots.Plot, P::PowerSpectrum; norm::Bool=false, args...)::Plots.Plot
+    R̂ = norm ? P.R̂ : 1.0
+    return plot!( plt, P.F.ω, P.R./R̂; args... )
 end
 
 println( "Loaded four.jl class file." )
