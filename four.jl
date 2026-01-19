@@ -66,9 +66,6 @@ mutable struct Fourier
     A::Vector{defFloat}
     B::Vector{defFloat}
 
-    # Power spectrum variable.
-    P::Vector{defFloat}
-
     # Top-level data references.
     X::Vector{defFloat}
     Y::Vector{defFloat}
@@ -83,9 +80,13 @@ function Fourier(X::Vector{defFloat}, Y::Vector{defFloat})::Fourier
     T = length( M )
     A = Vector{defFloat}( undef, T )
     B = Vector{defFloat}( undef, T )
-    P = Vector{defFloat}( undef, T )
 
-    return Fourier( M, A, B, P, M.D.X, M.D.Y, M.ω )
+    return Fourier( M, A, B, M.D.X, M.D.Y, M.ω )
+end
+
+function Base.copy(F::Fourier)::Fourier
+    return Fourier(
+        F.M, copy( F.A ), copy( F.B ), F.X, F.Y, F.ω )
 end
 
 function Base.length(F::Fourier)::defInt
@@ -136,6 +137,37 @@ end
 
 function error(F::Fourier; X::Vector{defFloat}=F.X, Y::Vector{defFloat}=F.Y)::defFloat
     return √sum( (Y .- solve( F; X=X )).^2 )
+end
+
+# Structure and helper variables for the power spectrum.
+mutable struct PowerSpectrum
+    # Mate the power spectrum to its Fourier transform.
+    F::Fourier
+
+    # Power spectrum variables.
+    P::Matrix{defFloat}
+    R::Vector{defFloat}
+    R̂::defFloat
+
+    # Variable that sorts the spectrum.
+    i::Vector{defInt}
+end
+
+function PowerSpectrum(F::Fourier)::PowerSpectrum
+    # Compute the power spectrum for sin/cos individually.
+    N = length( F )
+    P = 1/(4*(N + 1)).*[F.A.^2 F.B.^2]
+
+    # Sum the power spectrum and sort large → small.
+    R = vec( sum( P; dims=2 ) )
+    i = sortperm( R )[end:-1:1]
+
+    # Return structure.
+    return PowerSpectrum( F, P, R, sum( R ), i )
+end
+
+function Plots.plot!(plt::Plots.Plot, P::PowerSpectrum; args...)::Plots.Plot
+    return plot!( plt, P.F.ω, P.R/P.R̂; args... )
 end
 
 println( "Loaded four.jl class file." )
