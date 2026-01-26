@@ -166,6 +166,10 @@ function PowerSpectrum(F::Fourier)::PowerSpectrum
     return PowerSpectrum( F, P, R, sum( R ), i )
 end
 
+function Base.max(P::PowerSpectrum)::defFloat
+    return P.F.ω[P.i[1]]
+end
+
 function Plots.plot!(plt::Plots.Plot, P::PowerSpectrum; norm::Bool=true, args...)::Plots.Plot
     R̂ = norm ? P.R̂ : 1.0
     return plot!( plt, P.F.ω, P.R./R̂; args... )
