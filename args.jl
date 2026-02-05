@@ -27,8 +27,8 @@ default(
 )
 
 # Simple plot-saving helper function.
-function saveplot(plt, filename::String; background=:transparent)
-    plot!( plt; background=background, legend_background_color=:white )
+function saveplot(plt, filename::String; background=:transparent, args...)
+    plot!( plt; background=background, args... )
     savefig( plt,  filename )
     plot!( plt; background=:white )
     return plt
