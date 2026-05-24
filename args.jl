@@ -1,6 +1,7 @@
 
 const defFloat = Float64
 const defInt = Int64
+const defComp = ComplexF64
 
 using Plots
 using DelimitedFiles

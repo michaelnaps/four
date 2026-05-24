@@ -1,7 +1,6 @@
 
 include( "args.jl" )
 
-
 # Data set structure and helpers.
 struct Data
     # Data-related variables.
@@ -25,7 +24,7 @@ struct FourierModes
     # Hyper-parameters.
     N::defInt       # Number of modes.
     δx::defFloat    # Difference between x-points.
-    δω::defFloat    # "Step" of the frequency spectrum.
+    Ω::defFloat     # Range of the frequency spectrum.
 
     # Frequency and power spectrum variables.
     ω::Vector{defFloat}
@@ -41,12 +40,12 @@ function FourierModes(X::Vector{defFloat}, Y::Vector{defFloat})::FourierModes
     # Frequency spectrum hyper-parametrs.
     N = defInt( length( D )/2 )
     δx = defFloat( X̂[2] - X̂[1] )  # Assume evenly spaced data points.
-    δω = defFloat( 2*N*δx )
+    Ω = defFloat( 2*N*δx )
 
     # Construct frequency spectrum.
-    ω = defFloat.( 2π/δω.*(0:N) )
+    ω = defFloat.( 2π/Ω.*(0:N) )
 
-    return FourierModes( D, N, δx, δω, ω )
+    return FourierModes( D, N, δx, Ω, ω )
 end
 
 function Base.length(M::FourierModes)::defInt
@@ -114,7 +113,7 @@ function dft!(F::Fourier)::Fourier
     F.B[1] = 1/(2*N)*sum( F.Y )  # Mean value of the data points.
 
     # Compute the Fourier coefficients.
-    for i ∈ 2:length( F )-1
+    for i ∈ 2:(length( F )-1)
         F.A[i] = 1/N*sum( F.Y.*xSin[i,:] )
         F.B[i] = 1/N*sum( F.Y.*xCos[i,:] )
     end
@@ -156,11 +155,11 @@ end
 function PowerSpectrum(F::Fourier)::PowerSpectrum
     # Compute the power spectrum for sin/cos individually.
     N = length( F )
-    P = 1/(4*(N + 1)).*[F.A.^2 F.B.^2]
+    P = (1/2).*[F.A.^2 F.B.^2]  # Parseval normalization.
 
     # Sum the power spectrum and sort large → small.
     R = vec( sum( P; dims=2 ) )
-    i = sortperm( R )[end:-1:1]
+    i = sortperm( R; rev=true )
 
     # Return structure.
     return PowerSpectrum( F, P, R, sum( R ), i )
