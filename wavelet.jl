@@ -1,5 +1,5 @@
 
-include( "complex.jl" )
+include( "power.jl" )
 
 # Wavelet functions.
 function morlet(ω::defFloat; ω0::defFloat=5.0)::defFloat
