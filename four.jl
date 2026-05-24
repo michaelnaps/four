@@ -140,40 +140,4 @@ function error(F::Fourier; X::Vector{defFloat}=F.X, Y::Vector{defFloat}=F.Y)::de
     return √sum( (Y .- solve( F; X=X )).^2 )
 end
 
-# Structure and helper variables for the power spectrum.
-mutable struct PowerSpectrum
-    # Mate the power spectrum to its Fourier transform.
-    F::Fourier
-
-    # Power spectrum variables.
-    P::Matrix{defFloat}
-    R::Vector{defFloat}
-    R̂::defFloat
-
-    # Variable that sorts the spectrum.
-    i::Vector{defInt}
-end
-
-function PowerSpectrum(F::Fourier)::PowerSpectrum
-    # Compute the power spectrum for sin/cos individually.
-    N = length( F )
-    P = (1/2).*[F.A.^2 F.B.^2]  # Parseval normalization.
-
-    # Sum the power spectrum and sort large → small.
-    R = vec( sum( P; dims=2 ) )
-    i = sortperm( R; rev=true )
-
-    # Return structure.
-    return PowerSpectrum( F, P, R, sum( R ), i )
-end
-
-function Base.max(P::PowerSpectrum)::defFloat
-    return P.F.ω[P.i[1]]
-end
-
-function Plots.plot!(plt::Plots.Plot, P::PowerSpectrum; norm::Bool=true, args...)::Plots.Plot
-    R̂ = norm ? P.R̂ : 1.0
-    return plot!( plt, P.F.ω, P.R./R̂; args... )
-end
-
 println( "Loaded four.jl class file." )

@@ -17,6 +17,19 @@ end
 
 Base.broadcastable(F::ComplexFourier) = Ref( F )
 
+function Base.copy(F::ComplexFourier; C::Vector{defComp}=F.C)::ComplexFourier
+    return ComplexFourier(
+        F.M, copy( C ), F.X, F.Y, F.ω )
+end
+
+function Base.length(F::ComplexFourier)::defInt
+    return length( F.M )
+end
+
+function Plots.plot!(plt::Plots.Plot, F::ComplexFourier; args...)::Plots.Plot
+    return plot!( plt, F.M; args... )
+end
+
 function converter(A::Vector{defFloat}, B::Vector{defFloat})::Vector{defComp}
     # Zero-frequency component.
     C0 = complex( B[1], 0.0 )
