@@ -24,15 +24,17 @@ end
 Base.broadcastable(W::Wavelet) = Ref( W )
 
 function Wavelet(F::ComplexFourier; φ::Function=morlet)::Wavelet
+    # Return the wavelet variable.
     return Wavelet( F, φ )
 end
 
-function solve(W::Wavelet, s::defFloat; wavelet::Function=morlet)::Vector{defFloat}
+function solve(W::Wavelet, s::defFloat;
+    wavelet::Function=morlet, X::Vector{defFloat}=W.F.X)::Vector{defFloat}
     # Compute the scaled wavelet coefficients.
     Ĉ = scale( W.F, s; wavelet=wavelet )
 
     # Solve the wavelet coefficients.
-    return solve( ComplexFourier( W.F.M, Ĉ, W.F.X, W.F.Y, W.F.ω ); X=W.F.X )
+    return solve( ComplexFourier( W.F.M, Ĉ, W.F.X, W.F.Y, W.F.ω ); X=X )
 end
 
 println( "Loaded wavelet.jl class file." )
