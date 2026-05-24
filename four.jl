@@ -83,6 +83,8 @@ function Fourier(X::Vector{defFloat}, Y::Vector{defFloat})::Fourier
     return Fourier( M, A, B, M.D.X, M.D.Y, M.ω )
 end
 
+Base.broadcastable(F::Fourier) = Ref( F )
+
 function Base.copy(F::Fourier)::Fourier
     return Fourier(
         F.M, copy( F.A ), copy( F.B ), F.X, F.Y, F.ω )

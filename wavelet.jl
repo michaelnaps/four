@@ -8,7 +8,7 @@ end
 
 # Scaling transform.
 function scale(s::defFloat, ω::defFloat; ω0::defFloat=0.6, wavelet::Function=morlet)::defFloat
-    return wavelet( s*ω; ω0=ω0 )*√s
+    return √s.*wavelet( s*ω; ω0=ω0 )
 end
 
 # Class functions.
@@ -16,3 +16,5 @@ end
 #     # Fourier modes.
 #     M::FourierModes
 # end
+
+println( "Loaded wavelet.jl class file." )

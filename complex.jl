@@ -15,6 +15,8 @@ mutable struct ComplexFourier
     ω::Vector{defFloat}
 end
 
+Base.broadcastable(F::ComplexFourier) = Ref( F )
+
 function converter(A::Vector{defFloat}, B::Vector{defFloat})::Vector{defComp}
     # Zero-frequency component.
     C0 = complex( B[1], 0.0 )
@@ -37,19 +39,19 @@ function ComplexFourier(F::Fourier)::ComplexFourier
     return ComplexFourier( F.M, C, F.X, F.Y, F.ω )
 end
 
-function solve(C::ComplexFourier; X::Vector{defFloat}=C.X)::Vector{defComp}
+function solve(F::ComplexFourier; X::Vector{defFloat}=F.X)::Vector{defComp}
     # Cross the points with the coefficients and their conjugates.
-    ε = im.*(C.ω.*X')
+    ε = im.*(F.ω.*X')
 
     # Zero-frequency component.
-    Y0 = C.C[1].*exp.( ε[1,:] )
+    Y0 = F.C[1].*exp.( ε[1,:] )
 
     # Mid-frequency components.
-    Yk = vec( sum( C.C[2:end-1].*exp.( ε[2:end-1,:] ); dims=1 ) )
-    Ŷk = vec( sum( conj.( C.C[2:end-1] ).*exp.( -ε[2:end-1,:] ); dims=1 ) )
+    Yk = vec( sum( F.C[2:end-1].*exp.( ε[2:end-1,:] ); dims=1 ) )
+    Ŷk = vec( sum( conj.( F.C[2:end-1] ).*exp.( -ε[2:end-1,:] ); dims=1 ) )
 
     # Nyquist frequency component.
-    YN = C.C[end].*exp.( ε[end,:] )
+    YN = F.C[end].*exp.( ε[end,:] )
     return Y0 .+ Yk .+ Ŷk .+ YN
 end
 
@@ -71,12 +73,12 @@ function converter(C::Vector{defComp})::Tuple{Vector{defFloat},Vector{defFloat}}
     return ([A0;Ak;AN], [B0;Bk;BN])
 end
 
-function Fourier(C::ComplexFourier)::Fourier
+function Fourier(F::ComplexFourier)::Fourier
     # Compute the complex Fourier coefficients.
-    A, B = converter( C.C )
+    A, B = converter( F.C )
 
     # Return the new complex variable.
-    return Fourier( C.M, A, B, C.X, C.Y, C.ω )
+    return Fourier( F.M, A, B, F.X, F.Y, F.ω )
 end
 
 println( "Loaded complex.jl class file." )
