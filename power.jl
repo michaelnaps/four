@@ -17,21 +17,28 @@ mutable struct PowerSpectrum
     i::Vector{defInt}
 end
 
-function PowerSpectrum(F::Union{Fourier,ComplexFourier})::PowerSpectrum
-    # Compute the power spectrum for sin/cos individually.
-    N = length( F )
+function PowerSpectrum(F::Fourier)::PowerSpectrum
+    # Parseval-consistent power for real Fourier (cos/sin components).
+    P = 0.5.*[F.A.^2 F.B.^2]
 
-    if typeof( F ) == Fourier
-        P = (1/2).*[F.A.^2 F.B.^2]  # Parseval normalization.
-    elseif typeof( F ) == ComplexFourier
-        P = hcat( (1/2).*real.( F.C.*conj.( F.C ) ) )
-    end
-
-    # Sum the power spectrum and sort large → small.
+    # Compute the power and rank.
     R = vec( sum( P; dims=2 ) )
     i = sortperm( R; rev=true )
 
-    # Return structure.
+    # Return the power spectrum.
+    return PowerSpectrum( F, P, R, sum( R ), i )
+end
+
+
+function PowerSpectrum(F::ComplexFourier; Δω::Real=π)::PowerSpectrum
+    # Proper complex power spectrum
+    P = (Δω/2).*abs2.( F.C )
+
+    # Compute the power and rank.
+    R = vec( sum( P; dims=2 ) )
+    i = sortperm( R; rev=true )
+
+    # Return the power spectrum.
     return PowerSpectrum( F, P, R, sum( R ), i )
 end
 

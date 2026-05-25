@@ -3,7 +3,9 @@ include( "power.jl" )
 
 # Wavelet functions.
 function morlet(ω::defFloat; ω0::defFloat=5.0)::defFloat
-    return (1/π)^(0.25)*exp( -0.5*(ω - ω0)^2 )
+    σ = (1 + exp( -ω0^2 ) - 2exp( -0.75*ω0^2 ) )^(-0.5)
+    κ = exp( -0.5*ω0^2 )
+    return σ*(1/π)^(0.25)*(exp( -0.5*(ω - ω0)^2 ) - κ*exp( -0.5*ω^2 ))
 end
 
 # Scaling function.
