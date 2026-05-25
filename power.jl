@@ -1,6 +1,8 @@
 
 include( "complex.jl" )
 
+using StatsBase
+
 # Structure and helper variables for the power spectrum.
 mutable struct PowerSpectrum
     # Mate the power spectrum to its Fourier transform.
@@ -37,13 +39,13 @@ function Base.max(P::PowerSpectrum)::defFloat
     return P.F.ω[P.i[1]]
 end
 
+function StatsBase.mean(P::PowerSpectrum)::defFloat
+    return sum( P.R.*P.F.ω )./P.R̂
+end
+
 function Plots.plot!(plt::Plots.Plot, P::PowerSpectrum; norm::Bool=true, args...)::Plots.Plot
     R̂ = norm ? P.R̂ : 1.0
     return plot!( plt, P.F.ω, P.R./R̂; args... )
-end
-
-function Base.max(P::PowerSpectrum)::defFloat
-    return P.F.ω[P.i[1]]
 end
 
 function Plots.plot!(plt::Plots.Plot, P::PowerSpectrum; norm::Bool=true, args...)::Plots.Plot
