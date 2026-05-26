@@ -2,10 +2,8 @@
 include( "power.jl" )
 
 # Wavelet functions.
-function morlet(ω::defFloat; ω0::defFloat=6.0)::defFloat
-    σ = (1 + exp( -ω0^2 ) - 2*exp( -0.75*ω0^2 ) )^(-0.5)
-    κ = exp( -0.5*ω0^2 )
-    return σ*(1/π)^(0.25)*(exp( -0.5*(ω - ω0)^2 ) - κ*exp( -0.5*ω^2 ))
+function morlet(ω::defFloat; ω0::defFloat=2π)::defFloat
+    return (1/π)^(0.25)*(exp( -0.5*(ω - ω0)^2 ) - exp( -0.5*(ω^2 + ω0^2) ))
 end
 
 mutable struct Wavelet
