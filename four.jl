@@ -94,14 +94,10 @@ function Base.length(F::Fourier)::defInt
     return length( F.M )
 end
 
-function Plots.plot!(plt::Plots.Plot, F::Fourier; args...)::Plots.Plot
-    return plot!( plt, F.M; args... )
-end
-
-function serialize(F::Fourier; X::Vector{defFloat}=F.X)::Tuple{Matrix{defFloat},Matrix{defFloat}}
+function serialize(F::Fourier; X::Vector{defFloat}=F.X, ι::AbstractArray{defInt}=1:length( F.ω ))::Tuple{Matrix{defFloat},Matrix{defFloat}}
     # Create serialized set of waves from frequency list.
-    xSin = sin.( F.ω.*X' )
-    xCos = cos.( F.ω.*X' )
+    xSin = sin.( F.ω[ι].*X' )
+    xCos = cos.( F.ω[ι].*X' )
     return xSin, xCos
 end
 
@@ -128,12 +124,22 @@ function dft!(F::Fourier)::Fourier
     return F
 end
 
-function solve(F::Fourier; X::Vector{defFloat}=F.X)::Vector{defFloat}
+function solve(F::Fourier; X::Vector{defFloat}=F.X, ι::AbstractArray{defInt}=1:length( F.ω ))::Vector{defFloat}
     # Extract serialized wave lists.
-    xSin, xCos = serialize( F; X )
+    xSin, xCos = serialize( F; X, ι=ι )
 
     # Return Fourier series estimates.
-    return vec( F.A'*xSin + F.B'*xCos )
+    println( size( F.A ), size( xSin ) )
+    return vec( F.A[ι]'*xSin + F.B[ι]'*xCos )
+end
+
+function Plots.plot!(plt::Plots.Plot, X::Vector{defFloat}, F::Fourier; ι::AbstractArray{defInt}=1:length( F.ω ), args...)::Plots.Plot
+    Y = solve( F; X=X, ι=ι )
+    return plot!( plt, X, Y; args... )
+end
+
+function Plots.plot!(plt::Plots.Plot, F::Fourier; ι::AbstractArray{defInt}=1:length( F.ω ), args...)::Plots.Plot
+    return plot!( plt, F.X, F; ι=ι, args... )
 end
 
 function error(F::Fourier; X::Vector{defFloat}=F.X, Y::Vector{defFloat}=F.Y)::defFloat

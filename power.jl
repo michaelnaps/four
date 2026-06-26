@@ -42,8 +42,8 @@ function PowerSpectrum(F::ComplexFourier; Δω::Real=π)::PowerSpectrum
     return PowerSpectrum( F, P, R, sum( R ), i )
 end
 
-function Base.max(P::PowerSpectrum)::defFloat
-    return P.F.ω[P.i[1]]
+function Base.max(P::PowerSpectrum; ι::Union{defInt,Vector{defInt}}=1)::Union{defFloat,Vector{defFloat}}
+    return P.F.ω[P.i[ι]]
 end
 
 function StatsBase.mean(P::PowerSpectrum)::defFloat
