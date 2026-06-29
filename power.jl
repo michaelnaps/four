@@ -9,7 +9,7 @@ mutable struct PowerSpectrum
     F::Union{Fourier,ComplexFourier}
 
     # Power spectrum variables.
-    P::Matrix{defFloat}
+    P::Union{Matrix{defFloat},Vector{defFloat}}
     R::Vector{defFloat}
     R̂::defFloat
 
@@ -29,7 +29,6 @@ function PowerSpectrum(F::Fourier)::PowerSpectrum
     return PowerSpectrum( F, P, R, sum( R ), i )
 end
 
-
 function PowerSpectrum(F::ComplexFourier; Δω::Real=π)::PowerSpectrum
     # Proper complex power spectrum
     P = (Δω/2).*abs2.( F.C )
@@ -42,7 +41,7 @@ function PowerSpectrum(F::ComplexFourier; Δω::Real=π)::PowerSpectrum
     return PowerSpectrum( F, P, R, sum( R ), i )
 end
 
-function Base.max(P::PowerSpectrum; ι::Union{defInt,Vector{defInt}}=1)::Union{defFloat,Vector{defFloat}}
+function Base.max(P::PowerSpectrum; ι::Union{defInt,AbstractArray{defInt}}=1)::Union{defFloat,Vector{defFloat}}
     return P.F.ω[P.i[ι]]
 end
 
