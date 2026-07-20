@@ -129,7 +129,6 @@ function solve(F::Fourier; X::Vector{defFloat}=F.X, ι::AbstractArray{defInt}=1:
     xSin, xCos = serialize( F; X, ι=ι )
 
     # Return Fourier series estimates.
-    println( size( F.A ), size( xSin ) )
     return vec( F.A[ι]'*xSin + F.B[ι]'*xCos )
 end
 
